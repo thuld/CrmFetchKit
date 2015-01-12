@@ -1,0 +1,37 @@
+{
+  "name": "CrmFetchKit",
+  "version": "2.1.0",
+  "description": "Library for Dynamics CRM that allows the execution of fetchxml-queries via JavaScript",
+  "main": "./src/CrmFetchKit.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "homepage": "http://crmfetchkit.codeplex.com/",
+  "keywords": [
+    "SOAP",
+    "Dynamics",
+    "CRM"
+  ],
+  "author": "Daniel Thul <thuld@outlook.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "gulp": "^3.8.10",
+    "gulp-file-include": "^0.7.1",
+    "gulp-header": "^1.2.2",
+    "gulp-jshint": "^1.9.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-replace": "^0.5.0",
+    "gulp-uglify": "^1.0.2",
+    "gulp-zip": "^2.0.2",
+    "jshint-stylish": "^1.0.0",
+    "karma": "^0.12.31",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^0.1.7",
+    "karma-ie-launcher": "^0.1.5",
+    "karma-mocha": "^0.1.10",
+    "karma-mocha-reporter": "^0.3.1",
+    "mocha": "^2.1.0"
+  },
+  "dependencies": {}
+}

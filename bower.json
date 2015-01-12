@@ -1,0 +1,32 @@
+{
+  "name": "CrmFetchKit",
+  "version": "2.0.0",
+  "authors": [
+    "thuld <thuld@outlook.com>"
+  ],
+  "description": "Lib. that allows the execution of fetchxml-queries via JavaScript for Dynamics CRM (using the SOAP web services)",
+  "main": "CrmFetchKit.js",
+  "keywords": [
+    "SOAP",
+    "Dynamics",
+    "CRM"
+  ],
+  "license": "Ms-PL",
+  "homepage": "http://crmfetchkit.codeplex.com/",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "1.11.2"
+  },
+  "devDependencies": {
+    "chai": "~1.10.0",
+    "mocha": "~2.1.0",
+    "underscore": "~1.7.0"
+  }
+}

@@ -1,0 +1,20 @@
+{
+    "strict": true,
+    "undef": true,
+    "unused": true,
+    "curly": true,
+    "eqeqeq": true,
+    "latedef": true,
+    "node": true,
+    "browser": true,
+    "noarg": true,
+    "newcap": true,
+    "immed": true,
+    "sub": true,
+    "forin": true,
+    "devel": true,
+    "globals": {
+        "CrmFetchKit": false,
+        "CrmRestKit": false
+    }
+}
