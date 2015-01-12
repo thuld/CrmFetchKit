@@ -1,16 +1,21 @@
 {
   "name": "CrmFetchKit",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Library for Dynamics CRM that allows the execution of fetchxml-queries via JavaScript",
   "main": "./src/CrmFetchKit.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "homepage": "http://crmfetchkit.codeplex.com/",
+  "repository": {
+      "type": "git",
+      "url": "git://github.com/thuld/CrmFetchKit.git"
+  },
+  "homepage": "https://github.com/thuld/CrmFetchKit",
   "keywords": [
     "SOAP",
     "Dynamics",
-    "CRM"
+    "CRM",
+    "Dynamics CRM"
   ],
   "author": "Daniel Thul <thuld@outlook.com>",
   "license": "MIT",
@@ -33,5 +38,6 @@
     "karma-mocha-reporter": "^0.3.1",
     "mocha": "^2.1.0"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "readmeFilename": "README.md",
 }
