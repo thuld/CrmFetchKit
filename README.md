@@ -13,13 +13,18 @@ The version 2.x of the library uses [Mocha.js](http://mochajs.org/) as testing f
 
 ###Previous versions
 Previous versions (1.x) of this library are available on CodePlex (http://crmfetchkit.codeplex.com/)
-
 ## API Reference
 The current version supports the following operation:
-- `Fetch`
-- `FetchMore`
-- `FetchAll`
-- `Assign`
+- [`Fetch`](#fetch)
+- [`FetchMore`](#FetchMore)
+- [`FetchAll`](#FetchAll)
+- [`Assign`](#Assign)
+
+##Bower.io
+This module could be installed via [bower](http://bower.io/):
+````
+bower install crmfetchkit
+````
 
 ##Documentation (2.x)
 ###Fetch
@@ -47,7 +52,7 @@ CrmFetchKit.Fetch(fetchxml).then(function(entities){
 });
 ```
 ###FetchMore
-In a situation where the develper needs more control over the retured data, the `FetchMore` method should be used. The method will resolve the promise with an object that supports the following properties:
+In a situation where the developer needs more control over the loaded data, the `FetchMore` method should be used. The method will resolve the promise with an object that supports the following properties:
 - `totalRecordCount` (number)
 - `moreRecords` (boolean)
 - `pagingCookie` (string)
@@ -99,12 +104,12 @@ CrmFetchKit.FetchAll(fetchxml).then(function(entities){
 	}
 });
 ````
-Internaly use `FetchAll` the `FetchMore` method and the provided `pagingCookie` to load the pages until all records are loaded.
+Internally uses `FetchAll` the `FetchMore` method and the provided `pagingCookie` to load the pages until all records are loaded.
 
 **Note:** This method supports only the asynchronous execution.
 
 ###Assign
-The `Assign` methode allows the modification of the owner of an CRM record.
+The `Assign` method allows the modification of the owner of an CRM record.
 
 ````javascript
 var contactid = '06569fb8-88d0-4588-bdb8-c20c19e29205',
@@ -124,7 +129,7 @@ FetchXml support the joining via the "link-entity" tag. In case the query yields
 The following query uses the alias `bu` to identify the attributes of the joined entity `businessunit`:
 
 ````javascript
-// the query retrievs all account recrods that belong to the root business unit
+// the query loads all account records that belong to the root business unit
 var fetchxml = [
 	'<fetch version="1.0">',
 	'  <entity name="account">',
@@ -155,7 +160,7 @@ The methods `Fetch`, `FetchMore` and `Assign` support the options parameter `opt
 ````javascript
 CrmFetchKit.Fetch(query);
 ````
-To executed the operation in synchronous mode, the last paramter must be set to `false` when invoking the function
+To executed the operation in synchronous mode, the last parameter must be set to `false` when invoking the function
 ````javascript
 CrmFetchKit.Fetch(query, false);
 ````
@@ -163,7 +168,7 @@ The method `FetchAll` supports **only** the asynchronous execution.
 
 ##Testing
 ###Unit Test
-A very simple unit-testing is implemented. Basicly the test only verifies that the build task that generates the spec-runner combinats all files and that the most library provides the correct API (`Fetch`, `FetchMore`, `FetchAll`, `Assign`).
+A very simple unit-testing is implemented (based on [karma](http://karma-runner.github.io/0.12/index.html). The test only verifies that the module provides the correct API (`Fetch`, `FetchMore`, `FetchAll`, `Assign`).
 
 Run the following command to execute the unit-tests:
 ````
