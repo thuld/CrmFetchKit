@@ -11,6 +11,9 @@ The version 2.x of the library uses [Mocha.js](http://mochajs.org/) as testing f
 - Before this version the `getValue` method returns an `string` for option-sets attributes. With the 2.x version, the method return a value of type `number`. See integration test `should retrive the optionset-value as "number"`
 - The "Assign" accepts now five attributes (`id`, `entityname`, `assigneeId`, `assigneeEntityName`, `opt_async`).
 
+###Previous versions
+Previous versions (1.x) of this library are available on CodePlex (http://crmfetchkit.codeplex.com/)
+
 ## API Reference
 The current version supports the following operation:
 - `Fetch`
