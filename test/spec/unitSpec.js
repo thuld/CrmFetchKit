@@ -8,11 +8,11 @@ describe('CrmFetchKit', function(){
     describe('API', function(){
 
         it('should provide a "Fetch" method', function(){
-            expect(CrmFetchKit).to.exist();
+            expect(CrmFetchKit.Fetch).to.exist();
         });
 
         it('should provide a "FetchMore" method', function(){
-            expect(CrmFetchKit).to.to.exist();
+            expect(CrmFetchKit.FetchMore).to.to.exist();
         });
 
         it('should provide a "FetchAll" method', function(){

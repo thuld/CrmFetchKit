@@ -15,6 +15,8 @@ The code and the idea for this framework bases on the [CrmServiceToolkit](http:/
 - [Versions](#versions)
 
 #Documentation
+In case the provided samples in this section are not sufficient, please review the [integration tests](https://github.com/thuld/CrmFetchKit/blob/master/test/spec/integrationSpec.js). 
+
 ##API Reference
 The current version supports the following operation:
 

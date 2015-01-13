@@ -97,7 +97,7 @@ gulp.task('codeplex-zip', function () {
 ///
 gulp.task('build', ['compress'], function(){
 
-    gulp.start('codeplex-zip');
+    // gulp.start('codeplex-zip');
     gulp.start('build-integrationtest');
 });
 
