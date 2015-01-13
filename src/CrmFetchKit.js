@@ -1,4 +1,4 @@
-// CrmFetchKit.js 2.1.0
+// CrmFetchKit.js 2.2.1
 // http://crmfetchkit.codeplex.com/
 // Daniel René Thul <thuld@outlook.com>
 
