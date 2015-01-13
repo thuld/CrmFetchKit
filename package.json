@@ -1,6 +1,6 @@
 {
   "name": "CrmFetchKit",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Library for Dynamics CRM that allows the execution of fetchxml-queries via JavaScript",
   "main": "./src/CrmFetchKit.js",
   "scripts": {
@@ -39,5 +39,5 @@
     "mocha": "^2.1.0"
   },
   "dependencies": {},
-  "readmeFilename": "README.md",
+  "readmeFilename": "README.md"
 }
