@@ -51,14 +51,14 @@ gulp.task('compress', ['browserify'], function() {
 ///
 /// generates the testrunner html for the integration tests
 ///
-gulp.task('build-integrationtest', function() {
+gulp.task('build-specrunner', function() {
 
     return gulp.src(['./test/SpecRunner.tmpl'])
         .pipe(fileinclude( {
             context: { name: 'integration' }
         }))
         .pipe(replace('{{version}}', pkg.version))
-        .pipe(rename("SpecRunnerIntegration.html"))
+        .pipe(rename("SpecRunner.html"))
         .pipe(gulp.dest('./test'));
 });
 
@@ -71,19 +71,27 @@ gulp.task('browserify', function() {
         .pipe(gulp.dest('./build/'));
 });
 
+// using vinyl-source-strea to browserify the module
+gulp.task('browserify-specs', function() {
+
+    return browserify('./test/spec/soapParserSpec.js')
+        .bundle()
+        .pipe(source('soapParserSpec.bundle.js'))
+        .pipe(gulp.dest('./test/spec/'));
+});
+
 ///
 /// before starting the build, the compress task must be completed
 ///
-gulp.task('build', ['compress'], function(){
+gulp.task('build', ['compress', 'browserify-specs'], function(){
 
-    // gulp.start('codeplex-zip');
-    gulp.start('build-integrationtest');
+    gulp.start('build-specrunner');
 });
 
 ///
 /// executes the unit-tests using karma (run test once and exit)
 ///
-gulp.task('test', function (done) {
+gulp.task('test', ['browserify-specs'], function (done) {
     karma.start({
         configFile: __dirname + '/karma.conf.js',
         singleRun: true

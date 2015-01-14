@@ -51,7 +51,7 @@ module.exports = (function() {
 		var serializer = new XMLSerializer(),
 			parser = new DOMParser(),
 			fetchDoc = parser.parseFromString(fetchxml, 'text/xml'),
-			fetchElem = fetchDoc.getElement('fetch');
+			fetchElem = fetchDoc.getElementsByTagName('fetch')[0];
 
 		fetchElem.setAttribute('page', pageNumber);
 		fetchElem.setAttribute('paging-cookie', pagingCookie);

@@ -200,7 +200,7 @@ Run the following command to execute the unit-tests:
 gulp test
 ````
 ##Integration-tests
-Part of build task is the file "SpecRunnerIntegration.html" generated. This HTML file contains all dependencies (e.g. `mocha.js`, `chai.js`, `jquery.js`...) so the you need only to deploy this single HTML file as web-resource your environment.
+Part of build task is the file "SpecRunner.html" generated. This HTML file contains all dependencies (e.g. `mocha.js`, `chai.js`, `jquery.js`...) so the you need only to deploy this single HTML file as web-resource your environment.
 #Versions
 ##Version 3.x
 Uses [browserify](http://browserify.org/) for the dependency management.

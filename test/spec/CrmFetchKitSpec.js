@@ -1,8 +1,8 @@
 /*globals describe, chai, it, BusinessEntity*/
 
-'use strict';
 describe('CrmFetchKit', function(){
-
+    'use strict';
+    
     var expect = chai.expect;
 
     describe('API', function(){

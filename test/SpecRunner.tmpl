@@ -29,20 +29,11 @@
     <!-- setup mocha- otherwise "describe" is not defined -->
     <script>mocha.setup('bdd')</script>
 
-    @@if (context.name === 'integration') {
-      <!-- this script is only requried when the executing the tests in integration mode-->
-      <script src="ClientGlobalContext.js.aspx" type="text/javascript"></script>
-    }
+    <script src="ClientGlobalContext.js.aspx" type="text/javascript"></script>
 
     <!-- specifications -->
     <script>
-
-      @@if (context.name === 'integration') {
         @@include("spec/integrationSpec.js")
-      }
-      @@if (context.name === 'unit') {
-        @@include("spec/unitSpec.js")
-      }
     </script>
 
     <script>

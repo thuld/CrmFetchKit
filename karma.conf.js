@@ -17,7 +17,8 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      './test/spec/*.js',
+      './test/spec/CrmFetchKitSpec.js',
+      './test/spec/soapParserSpec.bundle.js',
       './build/CrmFetchKit.bundle.js'
       //'./src/CrmFetchKit.min.js'
     ],
@@ -25,7 +26,8 @@ module.exports = function(config) {
 
     // list of files to exclude
     exclude: [
-      './test/spec/integrationSpec.js'
+      './test/spec/integrationSpec.js',
+      './test/spec/soapParserSpec.js'
     ],
 
 
@@ -59,8 +61,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'IE'],
-
+    browsers: ['Chrome', 'IE', 'Firefox'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
