@@ -1,7 +1,6 @@
 var soapXml = require('./util/soapXmlMessages');
 var soapParser = require('./util/soapXmlParser');
 var xrmHttpUtil = require('./util/xrmHttpRequestUtil');
-var BluePromise = require('bluebird');
 
 /*global Xrm, GetGlobalContext */
 (function (window, document, undefined) {
@@ -123,7 +122,6 @@ var BluePromise = require('bluebird');
         var requestXml = soapXml.getFetchMoreXml(fetchxml),
             response = executeRequest(requestXml, false);
 
-        // todo - include error handling
         return soapParser.getFetchResult( response );
     }
 
@@ -177,7 +175,6 @@ var BluePromise = require('bluebird');
     ///
     function fetchSync(fetchxml) {
 
-        // todo - add error handling
         var result = fetchMoreSync(fetchxml);
 
         return result.entities;
@@ -194,7 +191,7 @@ var BluePromise = require('bluebird');
         });
     }
 
-    function getByIdSync(id, entityname, columns) {
+    function getByIdSync(entityname, id, columns) {
 
         var fetchxml = soapXml.buildGetByIdFetchXml(id, entityname, columns),
             entities = fetchSync(fetchxml);
@@ -207,7 +204,7 @@ var BluePromise = require('bluebird');
         return entities[0] || null;
     }
 
-    function getById(id, entityname, columns) {
+    function getById(entityname, id, columns) {
 
         var fetchxml = soapXml.buildGetByIdFetchXml(id, entityname, columns);
 

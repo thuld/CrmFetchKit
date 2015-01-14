@@ -1,6 +1,6 @@
 {
   "name": "CrmFetchKit",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "authors": [
     "thuld <thuld@outlook.com>"
   ],
@@ -8,8 +8,8 @@
   "main": "./build/CrmFetchKit.bundle.js",
   "homepage": "https://github.com/thuld/CrmFetchKit",
   "repository": {
-      "type": "git",
-      "url": "git://github.com/thuld/CrmFetchKit.git"
+    "type": "git",
+    "url": "git://github.com/thuld/CrmFetchKit.git"
   },
   "keywords": [
     "SOAP",
@@ -26,7 +26,7 @@
     "tests"
   ],
   "dependencies": {
-
+    "bluebird": "~2.6.4"
   },
   "devDependencies": {
     "jquery": "1.11.2",

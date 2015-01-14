@@ -1,8 +1,10 @@
+// CrmFetchKit.js 3.0.0
+// https://github.com/thuld/CrmFetchKit
+// Daniel Thul <thuld@outlook.com> 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var soapXml = require('./util/soapXmlMessages');
 var soapParser = require('./util/soapXmlParser');
 var xrmHttpUtil = require('./util/xrmHttpRequestUtil');
-var BluePromise = require('bluebird');
 
 /*global Xrm, GetGlobalContext */
 (function (window, document, undefined) {
@@ -124,7 +126,6 @@ var BluePromise = require('bluebird');
         var requestXml = soapXml.getFetchMoreXml(fetchxml),
             response = executeRequest(requestXml, false);
 
-        // todo - include error handling
         return soapParser.getFetchResult( response );
     }
 
@@ -178,7 +179,6 @@ var BluePromise = require('bluebird');
     ///
     function fetchSync(fetchxml) {
 
-        // todo - add error handling
         var result = fetchMoreSync(fetchxml);
 
         return result.entities;
@@ -195,7 +195,7 @@ var BluePromise = require('bluebird');
         });
     }
 
-    function getByIdSync(id, entityname, columns) {
+    function getByIdSync(entityname, id, columns) {
 
         var fetchxml = soapXml.buildGetByIdFetchXml(id, entityname, columns),
             entities = fetchSync(fetchxml);
@@ -208,7 +208,7 @@ var BluePromise = require('bluebird');
         return entities[0] || null;
     }
 
-    function getById(id, entityname, columns) {
+    function getById(entityname, id, columns) {
 
         var fetchxml = soapXml.buildGetByIdFetchXml(id, entityname, columns);
 
@@ -239,7 +239,7 @@ var BluePromise = require('bluebird');
     };
 }(window, document));
 
-},{"./util/soapXmlMessages":40,"./util/soapXmlParser":41,"./util/xrmHttpRequestUtil":42,"bluebird":4}],2:[function(require,module,exports){
+},{"./util/soapXmlMessages":40,"./util/soapXmlParser":41,"./util/xrmHttpRequestUtil":42}],2:[function(require,module,exports){
 "use strict";
 module.exports = function(Promise) {
 var SomePromiseArray = Promise._SomePromiseArray;

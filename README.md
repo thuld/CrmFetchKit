@@ -5,20 +5,29 @@ Just like the [CrmRestKit.js](http://crmrestkit.codeplex.com/) this framework us
 The code and the idea for this framework bases on the [CrmServiceToolkit](http://crmtoolkit.codeplex.com) developed by Daniel Cai.
 
 #Topics
+- [Support](#support)
 - [Documentation](#documentation)
 	- [`GetById`](#getbyid)
 	- [`GetByIdSync`](#getbyid)
 	- [`Fetch`](#fetch)
+	- [`FetchSync`](#fetchsync)
 	- [`FetchMore`](#fetchmore)
+	- [`FetchMoreSync`](#fetchmore)
 	- [`FetchAll`](#fetchall)
 	- [`Assign`](#assign)
+	- [`AssignSync`](#assignsync)
 - [Installation](#installation)
+- [Build](#build)
 - [Testing](#testing)
 - [Versions](#versions)
 
-#Support Browser
+#Support
 ##Version 3.x
-The version 3.x support Chrome, Firefox and IE9+
+The version 3.x supports Chrome, Firefox and IE9+ and was tested with **Dynamics CRM 2013 Online**.
+
+##Version 2.x
+The version 2.x supports Chrome, Firefox and IE8+ and was tested with **Dynamics CRM 2013 Online**.
+
 #Documentation
 In case the provided samples in this section are not sufficient, please review the [integration tests](https://github.com/thuld/CrmFetchKit/blob/master/test/spec/integrationSpec.js).
 
@@ -26,8 +35,25 @@ In case the provided samples in this section are not sufficient, please review t
 Instead of create a fetchxml query for a very simple query, this method should be used to load an records based on the id.
 
 ````javascript
-````
+var accountid = '06887701-2642-4a53-99ba-c24ce1a5688b',
+	columns = ['name', 'donotfax', 'donotemail', 'createdon'];
 
+CrmFetchKit.GetById('account', accountId, columns).then(function(account) {
+
+		console.log(account.getValue('name'));
+
+	});
+````
+##GetByIdSync
+````javascript
+var accountid = '06887701-2642-4a53-99ba-c24ce1a5688b',
+	columns = ['name', 'donotfax', 'donotemail', 'createdon'],
+	account;
+
+account = CrmFetchKit.GetByIdSync('account', accountId,  columns);
+
+console.log(account.getValue('name'));
+````
 ##Fetch
 With the `Fetch` method is it possible to execute fetch-xml based query.
 The method will resolve the promise with an array of `BusinessEntity` objects. These type supports the method `getValue(<%attributename%>)`.
@@ -48,11 +74,34 @@ var fetchxml = [
 	'</fetch>'].join('');
 
 CrmFetchKit.Fetch(fetchxml).then(function(entities){
+
 	for(var i = 0, max = entities.length; i < max; i++) {
 		console.log(entities[0].getValue('name'))
 	}
 });
 ```
+
+##FetchSync
+```javascript
+var fetchxml = [
+	'<fetch version="1.0">',
+	'  <entity name="account">',
+	'    <attribute name="name" />',
+	'    <attribute name="accountid" />',
+	'    <filter type="and">',
+	'      <condition attribute="name"',
+	'          operator="eq" value="foobar" />',
+	'    </filter>',
+	'  </entity>',
+	'</fetch>'].join('');
+
+var entities = CrmFetchKit.Fetch(fetchxml);
+
+for(var i = 0, max = entities.length; i < max; i++) {
+	console.log(entities[0].getValue('name'))
+}
+```
+
 ##FetchMore
 In a situation where the developer needs more control over the loaded data, the `FetchMore` method should be used. The method will resolve the promise with an object that supports the following properties:
 - `totalRecordCount` (number)
@@ -87,9 +136,38 @@ CrmFetchKit.FetchMore(fetchxml).then(function(response){
 	}
 	});
 ````
+##FetchMoreSync
+````javascript
+var fetchxml = [
+	'<fetch version="1.0"',
+	'	returntotalrecordcount="true" ',
+	'	count="10">',
+	'  <entity name="contact">',
+	'    <attribute name="lastname" />',
+	'    <attribute name="contactid" />',
+	'    <filter type="and">',
+	'      <condition attribute="lastname" ',
+	'           operator="like" value="foobar" />',
+	'    </filter>',
+	'  </entity>',
+	'</fetch>'].join('');
+
+var CrmFetchKit.FetchMore(fetchxml);
+
+console.log(response.totalRecordCount);
+console.log(response.moreRecords);
+console.log(response.entityName);
+console.log(response.pagingCookie);
+
+for(var i = 0, max = response.entities; i < max; i++){
+	console.log(response.entities[i].getValue('lastname'));
+}
+
+````
 ##FetchAll
 To address the 5.000 records query limit of Dynamics CRM (a single request return at a maximum 5.000 records) provides the CrmFetchKit with the `FetchAll` method an option to load all records retunred by an query.
 
+**Note:** This method supports only the asynchronous execution.
 ````javascript
 // query loads all contact records in the system
 var fetchxml = [
@@ -109,8 +187,6 @@ CrmFetchKit.FetchAll(fetchxml).then(function(entities){
 ````
 Internally uses `FetchAll` the `FetchMore` method and the provided `pagingCookie` to load the pages until all records are loaded.
 
-**Note:** This method supports only the asynchronous execution.
-
 ##Assign
 The `Assign` method allows the modification of the owner of an CRM record.
 
@@ -119,10 +195,18 @@ var contactid = '06569fb8-88d0-4588-bdb8-c20c19e29205',
 // the team is the new owner of the concact record
 teamid = '4797f323-76ac-4cf7-8342-b7c1bafd5154';
 
-CrmFetchKit.Assign(contactid, 'contact', teamid, 'team')
-.then(function(){
-//..
+CrmFetchKit.Assign(contactid, 'contact', teamid, 'team').then(function(){
+
+	//..
 });
+````
+##AssignSync
+````javascript
+var contactid = '06569fb8-88d0-4588-bdb8-c20c19e29205',
+	// the team is the new owner of the concact record
+	teamid = '4797f323-76ac-4cf7-8342-b7c1bafd5154';
+
+CrmFetchKit.Assign(contactid, 'contact', teamid, 'team');
 ````
 **Note:** The parameter for this method have change form the 1.x version of the CrmFetchKit. The old version supported only the assignment of `SystemUsers` where the current version supports `Teams` and `SystemUsers`.
 
@@ -168,15 +252,18 @@ To executed the operation in synchronous mode, the last parameter must be set to
 CrmFetchKit.Fetch(query, false);
 ````
 The method `FetchAll` supports **only** the asynchronous execution.
+
 #Installation
-##Files
-The GitHub folder `src` hosts two file: `CrmFetchKit.js`, `CrmFetchKit.min.js`, just download one of these files and deploy the script as web-resource to your CRM server.
+The GitHub folder `build` hosts two file: `CrmFetchKit.bundle.js`, `CrmFetchKit.min.js`, just download one of these files and deploy the script as web-resource to your CRM server.
+
+**Note:** The library uses [bluebird](https://github.com/petkaantonov/bluebird) for the promise features. The build step (gulp) generates the file `CrmFetchKit.bundle.js` and this file already contains bluebird. So it is not necessary to deploy bluebird as additional web-resource to Dynamics CRM.
+
 ##Bower.io
 This module could be installed via [bower](http://bower.io/):
 ````
 bower install crmfetchkit
 ````
-##Build and dev. dependencies
+##Build
 To build the library from source-code the following components are required:
 - Node.js
 - bower.io
@@ -193,14 +280,14 @@ bower install
 ````
 #Testing
 ##Unit Test
-A very simple unit-testing is implemented (based on [karma](http://karma-runner.github.io/0.12/index.html). The test only verifies that the module provides the correct API (`Fetch`, `FetchMore`, `FetchAll`, `Assign`).
+A very simple unit-testing is implemented (based on [karma](http://karma-runner.github.io/0.12/index.html). The test only verifies some basis conditions.
 
 Run the following command to execute the unit-tests:
 ````
 gulp test
 ````
 ##Integration-tests
-Part of build task is the file "SpecRunner.html" generated. This HTML file contains all dependencies (e.g. `mocha.js`, `chai.js`, `jquery.js`...) so the you need only to deploy this single HTML file as web-resource your environment.
+Part of build task is the file "SpecRunner.html" generated. This HTML file contains all dependencies (e.g. `mocha.js`, `chai.js`, `CrmFetchKit.bundle.js`...) so the you need only to deploy this single HTML file as web-resource your environment.
 #Versions
 ##Version 3.x
 Uses [browserify](http://browserify.org/) for the dependency management.
@@ -208,7 +295,7 @@ Uses [browserify](http://browserify.org/) for the dependency management.
 The jQuery dependency will be removed. The version 3.x will use [bluebird](https://github.com/petkaantonov/bluebird) as Promise library.
 
 Due to the use of bluebird instead of jQuery, some method are no longer available by the returned promise:
-- `always` instead use 'finally'
+- `always` instead use `finally`
 - `fail` instead use `catch`
 
 *Note:* Unfortunately depends "CrmRestKit.js" (use for the integration-tests) still jQuery. Therefor is it not possible to remove the jQuery dependency for now.

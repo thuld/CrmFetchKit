@@ -1,4 +1,4 @@
-/*globals describe, it, $, chai, before, after, Xrm, _, specUtil*/
+/*globals describe, it, chai, before, after, Xrm, _, specUtil*/
 
 'use strict';
 describe('CrmFetchKit API', function() {
@@ -92,9 +92,9 @@ describe('CrmFetchKit API', function() {
             this.timeout(8000);
 
             specUtil.createAccount(accountRecord).then(function(data) {
-                    accountId = data.d.AccountId;
-                    done();
-                });
+                accountId = data.d.AccountId;
+                done();
+            });
         });
 
         ///
@@ -113,8 +113,7 @@ describe('CrmFetchKit API', function() {
         it('should yield an single account record', function(done) {
 
             // action
-            CrmFetchKit
-                .GetById(accountId, 'account', columns)
+            CrmFetchKit.GetById('account', accountId, columns)
                 .then(function(account) {
                     // assert
                     expect(account).to.exist();
@@ -125,7 +124,7 @@ describe('CrmFetchKit API', function() {
         it('should yield an single account record when using the sync counterpart', function() {
 
             // action
-            var account = CrmFetchKit.GetByIdSync(accountId, 'account', columns);
+            var account = CrmFetchKit.GetByIdSync('account', accountId, columns);
 
             // assert
             expect(account).to.exist();
@@ -136,7 +135,7 @@ describe('CrmFetchKit API', function() {
             var fakeId = 'b887b4fd-f777-455f-a306-c763e904447e';
 
             // action
-            var account = CrmFetchKit.GetByIdSync(fakeId, 'account', columns);
+            var account = CrmFetchKit.GetByIdSync('account', fakeId, columns);
 
             // assert
             expect(account).to.be.null();

@@ -14,6 +14,12 @@ var browserify = require('browserify');
 var pkg = require('./package.json');
 
 
+var banner = [
+    '// <%= name %>.js <%= version %>',
+    '// <%= homepage %>',
+    '// <%= author %> \n',
+    ].join('\n');
+    
 ///
 /// static code analysis
 ///
@@ -35,12 +41,6 @@ gulp.task('lint', function(){
 /// applies the minifcations
 ///
 gulp.task('compress', ['browserify'], function() {
-
-    var banner = [
-        '// <%= name %>.js <%= version %>',
-        '// <%= homepage %>',
-        '// <%= author %> \n',
-        ].join('\n');
 
     return gulp.src('build/CrmFetchKit.bundle.js')
         .pipe(uglify())
@@ -69,6 +69,7 @@ gulp.task('browserify', function() {
     return browserify('./src/main.js')
         .bundle()
         .pipe(source('CrmFetchKit.bundle.js'))
+        .pipe( header(banner, pkg))
         .pipe(gulp.dest('./build/'));
 });
 
