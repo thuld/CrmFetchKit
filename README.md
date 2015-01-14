@@ -8,11 +8,11 @@ The code and the idea for this framework bases on the [CrmServiceToolkit](http:/
 - [Support](#support)
 - [Documentation](#documentation)
 	- [`GetById`](#getbyid)
-	- [`GetByIdSync`](#getbyid)
+	- [`GetByIdSync`](#getbyidsync)
 	- [`Fetch`](#fetch)
 	- [`FetchSync`](#fetchsync)
 	- [`FetchMore`](#fetchmore)
-	- [`FetchMoreSync`](#fetchmore)
+	- [`FetchMoreSync`](#fetchmoresync)
 	- [`FetchAll`](#fetchall)
 	- [`Assign`](#assign)
 	- [`AssignSync`](#assignsync)
@@ -95,7 +95,7 @@ var fetchxml = [
 	'  </entity>',
 	'</fetch>'].join('');
 
-var entities = CrmFetchKit.Fetch(fetchxml);
+var entities = CrmFetchKit.FetchSync(fetchxml);
 
 for(var i = 0, max = entities.length; i < max; i++) {
 	console.log(entities[0].getValue('name'))
@@ -152,7 +152,7 @@ var fetchxml = [
 	'  </entity>',
 	'</fetch>'].join('');
 
-var CrmFetchKit.FetchMore(fetchxml);
+var CrmFetchKit.FetchMoreSync(fetchxml);
 
 console.log(response.totalRecordCount);
 console.log(response.moreRecords);
@@ -206,7 +206,7 @@ var contactid = '06569fb8-88d0-4588-bdb8-c20c19e29205',
 	// the team is the new owner of the concact record
 	teamid = '4797f323-76ac-4cf7-8342-b7c1bafd5154';
 
-CrmFetchKit.Assign(contactid, 'contact', teamid, 'team');
+CrmFetchKit.AssignSync(contactid, 'contact', teamid, 'team');
 ````
 **Note:** The parameter for this method have change form the 1.x version of the CrmFetchKit. The old version supported only the assignment of `SystemUsers` where the current version supports `Teams` and `SystemUsers`.
 
@@ -306,5 +306,6 @@ The version 2.x of the library uses [Mocha.js](http://mochajs.org/) as testing f
 ###Breaking Changes from version 1.x
 - Before this version the `getValue` method returns an `string` for option-sets attributes. With the 2.x version, the method return a value of type `number`. See integration test `should retrieve the optionset-value as "number"`
 - The "Assign" accepts now five attributes (`id`, `entityname`, `assigneeId`, `assigneeEntityName`, `opt_async`).
+
 ##Versions 1.x
 Previous versions (1.x) of this library are available on CodePlex (http://crmfetchkit.codeplex.com/)
