@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CrmFetchKit-2.1.0 Test Runner</title>
+    <title>CrmFetchKit-3.0.0 Test Runner</title>
 
     <style type="text/css">
       @charset "utf-8";
@@ -11541,6 +11541,33 @@ if (typeof exports == "object") {
     }
 
     ///
+    /// returns an promise that is resolved once all delete operation
+    /// are completed
+    ///
+    function deleteAccountsByFilter(filter) {
+
+        var setOfDeletePromises = [];
+
+        return CrmRestKit
+            .ByQueryAll('Account', ['AccountId'], filter)
+            .then(function(data){
+
+                _.each(data, function(contactrecord){
+                    setOfDeletePromises.push(
+                        CrmRestKit.Delete('Account', contactrecord.AccountId)
+                    );
+                });
+            })
+            .then(function(){
+
+                // return a promise that is resolved once all
+                // deleted-promises are completed
+                return $.when.apply($, setOfDeletePromises);
+            });
+    }
+
+
+    ///
     /// Public API
     ///
     window.specUtil = {
@@ -11549,16 +11576,750 @@ if (typeof exports == "object") {
         createSetOfContacts: createSetOfContacts,
         createContactRecord: createContactRecord,
         deleteContactsByFilter: deleteContactsByFilter,
+        deleteAccountsByFilter: deleteAccountsByFilter,
         onFetchError: onFetchError,
         onRestError: onRestError,
     };
 }());
 
 
-      // CrmFetchKit.js 2.1.0
-// http://crmfetchkit.codeplex.com/
-// Daniel Thul <thuld@outlook.com> 
-!function(e,t,a){"use strict";function r(){this.Id=null,this.logicalName=null,this.attributes={}}function n(){if(null===w)if("undefined"!=typeof GetGlobalContext)w=GetGlobalContext();else{if("undefined"==typeof Xrm)throw new Error("Context is not available.");w=Xrm.Page.context}return w}function i(){if(null===S){var t=null,r=e.location.protocol+"//"+e.location.host,i=n();Xrm.Page.context.getClientUrl!==a?t=Xrm.Page.context.getClientUrl():i.isOutlookClient()&&!i.isOutlookOnline()?t=r:(t=i.getServerUrl(),t=t.replace(/^(http|https):\/\/([_a-zA-Z0-9\-\.]+)(:([0-9]{1,5}))?/,r),t=t.replace(/\/$/,"")),S=t}return S}function o(e){var t=/(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)(\.\d+)?(Z|([+-])(\d\d):(\d\d))/,a=[];if(a=e.match(t),!a)throw"Couldn't parse ISO 8601 date string '"+e+"'";for(var r=[1,2,3,4,5,6,10,11],n=0,i=r.length;i>n;n++)a[r[n]]=parseInt(a[r[n]],10);a[7]=parseFloat(a[7]);var o=Date.UTC(a[1],a[2]-1,a[3],a[4],a[5],a[6]);if(a[7]>0&&(o+=Math.round(1e3*a[7])),"Z"!==a[8]&&a[10]){var s=60*a[10]*60*1e3;a[11]&&(s+=60*a[11]*1e3),"-"===a[9]?o-=s:o+=s}return new Date(o)}function s(e){for(var t,a,r,n,i,o,s=0;s<e.childNodes.length;s++)switch(o=e.childNodes[s],o.nodeName){case"a:EntityName":t=g(o);break;case"a:MoreRecords":a="true"===g(o);break;case"a:PagingCookie":r=g(o);break;case"a:TotalRecordCount":n=parseInt(g(o));break;case"a:Entities":i=o}return{entityName:t,moreRecords:a,pagingCookie:r,totalRecordCount:n}}function l(e){var t=h(e,"a:Entities").childNodes,a=s(e),r=$.map(t,m);return{entityName:a.entityName,moreRecords:a.moreRecords,pagingCookie:a.pagingCookie,totalRecordCount:a.totalRecordCount,entities:r}}function c(e,t){var a={type:e};switch(e){case"a:OptionSetValue":a.value=parseInt(g(t),10);break;case"a:EntityReference":a.guid=f(t,"a:Id"),a.name=f(t,"a:Name"),a.logicalName=f(t,"a:LogicalName");break;case"a:EntityCollection":a.value=l(t);break;case"a:Money":a.value=parseFloat(g(t),10);break;case"a:AliasedValue":var r=h(t,"a:Value"),n=v(r,"i:type");a=c(n,r);break;case"c:int":a.value=parseInt(g(t),10);break;case"c:decimal":a.value=parseFloat(g(t));break;case"c:dateTime":a.value=o(g(t));break;case"c:boolean":a.value="true"!==g(t)?!1:!0;break;default:a.value=g(t)}return a}function u(e){for(var t={},a=null,r=null,n=null,i=null,o=0,s=e.childNodes.length;s>o;o++)a=e.childNodes[o],r=f(a,"b:key"),i=h(a,"b:value"),n=v(i,"i:type"),t[r]=c(n,i);return t}function m(e){var t=new r,a=null,n=null,i=null,o=null;t.Id=f(e,"a:Id"),t.attributes=u(h(e,"a:Attributes")),t.logicalName=f(e,"a:LogicalName"),a=h(e,"a:FormattedValues").childNodes;for(var s=0,l=a.length;l>s;s++)n=a[s],i=f(n,"b:key"),o=f(n,"b:value"),t.attributes[i].formattedValue=o;return t}function d(e){var t={">":"&gt;","<":"&lt;","'":"&apos;",'"':"&quot;","&":"&amp;"};return e.replace(/([&"<>'])/g,function(e,a){return t[a]})}function p(t){var a;if(e.XMLSerializer){var r=new XMLSerializer;a=r.serializeToString(t)}else a=t.xml;return a}function f(e,t){return g(h(e,t))}function h(e,t){for(var a,r=0,n=e.childNodes.length;n>r;r++)if(a=e.childNodes[r],a.nodeName===t)return a}function v(e,t){for(var a=null,r=0;r<e.attributes.length;r++)if(a=e.attributes[r],a.name===t)return a.value}function g(e){return e.text!==a?e.text:e.textContent}function y(e){var t=e.firstChild.firstChild.firstChild.firstChild,a=h(t,"a:Results"),r=h(a.firstChild,"b:value"),n=h(r,"a:Entities").childNodes;return{entityName:f(r,"a:EntityName"),moreRecords:"true"===f(r,"a:MoreRecords"),pagingCookie:f(r,"a:PagingCookie"),totalRecordCount:parseInt(f(r,"a:TotalRecordCount"),10),entities:$.map(n,m)}}function b(e,t,a){var r=$.parseXML(e),n=$(r).find("fetch");return n.attr("page",t),n.attr("paging-cookie",a),p(r)}function x(e,t){var a=t===!1?!1:!0;return $.ajax({type:"POST",async:a,data:e,url:i()+E,headers:{Accept:"application/xml, text/xml, */*","Content-Type":"text/xml; charset=utf-8",SOAPAction:"http://schemas.microsoft.com/xrm/2011/Contracts/Services/IOrganizationService/Execute"}})}function C(e,t,a,r,n){var i=n===!1?!1:!0,o=['<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">',"  <s:Body>",'    <Execute xmlns="http://schemas.microsoft.com/xrm/2011/Contracts/Services" ','           xmlns:i="http://www.w3.org/2001/XMLSchema-instance">','      <request i:type="b:AssignRequest" xmlns:a="http://schemas.microsoft.com/xrm/2011/Contracts" ','           xmlns:b="http://schemas.microsoft.com/crm/2011/Contracts">','        <a:Parameters xmlns:c="http://schemas.datacontract.org/2004/07/System.Collections.Generic">',"          <a:KeyValuePairOfstringanyType>","            <c:key>Target</c:key>",'            <c:value i:type="a:EntityReference">',"              <a:Id>"+e+"</a:Id>","              <a:LogicalName>"+t+"</a:LogicalName>",'              <a:Name i:nil="true" />',"            </c:value>","          </a:KeyValuePairOfstringanyType>","          <a:KeyValuePairOfstringanyType>","            <c:key>Assignee</c:key>",'            <c:value i:type="a:EntityReference">',"              <a:Id>"+a+"</a:Id>","              <a:LogicalName>"+r+"</a:LogicalName>",'              <a:Name i:nil="true" />',"            </c:value>","          </a:KeyValuePairOfstringanyType>","        </a:Parameters>",'        <a:RequestId i:nil="true" />',"        <a:RequestName>Assign</a:RequestName>","      </request>","    </Execute>","  </s:Body>","</s:Envelope>"].join("");return x(o,i)}function N(e,t){var a=t===!1?!1:!0,r=['<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">'," <s:Body>",'  <Execute xmlns="http://schemas.microsoft.com/xrm/2011/Contracts/Services">','     <request i:type="b:RetrieveMultipleRequest" xmlns:b="http://schemas.microsoft.com/xrm/2011/Contracts" ','         xmlns:i="http://www.w3.org/2001/XMLSchema-instance">','             <b:Parameters xmlns:c="http://schemas.datacontract.org/2004/07/System.Collections.Generic">',"             <b:KeyValuePairOfstringanyType>","                 <c:key>Query</c:key>",'                 <c:value i:type="b:FetchExpression">',"                     <b:Query>",d(e),"                     </b:Query>","                 </c:value>","             </b:KeyValuePairOfstringanyType>","         </b:Parameters>",'         <b:RequestId i:nil="true"/>',"         <b:RequestName>RetrieveMultiple</b:RequestName>","     </request>"," </Execute>","</s:Body></s:Envelope>"].join("");return x(r,a).then(function(e,t,a){return y(e,a)})}function k(e,t){var a=$.Deferred(),r=[],n=t||1,i=null;return N(e,!0).then(function(t){r=r.concat(t.entities),t.moreRecords?(n++,i=b(e,n,t.pagingCookie),k(i,n).then(function(e){r=r.concat(e),a.resolve(r)},a.reject)):a.resolve(r)},a.reject),a.promise()}function R(e,t){var a=t===!1?!1:!0;return N(e,a).then(function(e){return e.entities})}var E="/XRMServices/2011/Organization.svc/web",w=null,S=null;r.prototype.getValue=function(e,t){var r=this.attributes[e];if(r){var n=r.type;switch(n){case"a:EntityReference":return t!==a?r[t]:r.guid;case"a:OptionSetValue":return t!==a?r[t]:r.value;default:return r.value}}return null},e.CrmFetchKit={Fetch:R,FetchMore:N,FetchAll:k,Assign:C}}(window,document);
+      (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var soapXml = require('./util/soapXmlMessages');
+var soapParser  = require('./util/soapXmlParser');
+
+/*global Xrm, $, GetGlobalContext */
+(function (window, document, undefined) {
+    'use strict';
+
+    ///
+    /// Private member
+    ///
+    var SOAP_ENDPOINT = '/XRMServices/2011/Organization.svc/web',
+        // cache for the context
+        GLOBAL_CONTEXT = null,
+        // cache for the server-url
+        SERVER_URL = null;
+
+    ///
+    /// Private function to the context object.
+    ///
+    function getContext() {
+
+        if (GLOBAL_CONTEXT === null) {
+
+            if (typeof GetGlobalContext !== "undefined") {
+
+                /* jshint ignore:start */
+                GLOBAL_CONTEXT = GetGlobalContext();
+                /* jshint ignore:end */
+            }
+            else {
+
+                if (typeof Xrm !== "undefined") {
+                    GLOBAL_CONTEXT = Xrm.Page.context;
+                }
+                else {
+                    throw new Error("Context is not available.");
+                }
+            }
+        }
+
+        return GLOBAL_CONTEXT;
+    }
+
+    ///
+    /// Private function to return the server URL from the context
+    ///
+    function getServerUrl() {
+
+        var winLocation = window.location;
+
+        if (SERVER_URL === null) {
+
+            var url = null,
+                localServerUrl = winLocation + "//" + winLocation,
+                context = getContext();
+
+            if ( Xrm.Page.context.getClientUrl !== undefined ) {
+                // since version SDK 5.0.13
+                // http://www.magnetismsolutions.com/blog/gayan-pereras-blog/2013/01/07/crm-2011-polaris-new-xrm.page-method
+
+                url = Xrm.Page.context.getClientUrl();
+            }
+            else if ( context.isOutlookClient() && !context.isOutlookOnline() ) {
+                url = localServerUrl;
+            }
+            else {
+                url = context.getServerUrl();
+                url = url.replace( /^(http|https):\/\/([_a-zA-Z0-9\-\.]+)(:([0-9]{1,5}))?/, localServerUrl );
+                url = url.replace( /\/$/, "" );
+            }
+
+            SERVER_URL = url;
+
+        }
+
+        return SERVER_URL;
+    }
+
+    ///
+    /// Performs the Ajax request
+    ///
+    function executeRequest(xml, opt_async) {
+
+        // default is true
+        var async = (opt_async === false)? false: true,
+            url = getServerUrl() + SOAP_ENDPOINT,
+            req = new XMLHttpRequest(),
+            // result could be a promise of the ajax response
+            result = null,
+            dfd = null;
+
+        req.open("Post", url, async);
+
+        req.setRequestHeader("Accept", "application/xml, text/xml, */*");
+        req.setRequestHeader("Content-Type", "text/xml; charset=utf-8");
+        req.setRequestHeader("SOAPAction",
+            "http://schemas.microsoft.com/xrm/2011/Contracts/Services/IOrganizationService/Execute");
+
+        if (async) {
+
+            dfd = new $.Deferred();
+            result = dfd.promise();
+
+            req.onreadystatechange = function () {
+                // completed
+                if (req.readyState === 4) {
+
+                    if(req.status === 200) {
+                        dfd.resolve(req.responseXML);
+                    }
+                    else {
+                        dfd.reject( soapParser.getSoapError(req.responseXML) );
+                    }
+                }
+            };
+
+            req.send(xml);
+        }
+        else {
+
+            req.send(xml);
+
+            if(req.status === 200) {
+                result = req.responseXML;
+            }
+            else {
+
+                var msg = 'CRM SERVER ERROR: ' + soapParser.getSoapError(req.responseXML);
+                throw new Error(msg);
+            }
+        }
+
+        return result;
+    }
+
+    ///
+    /// Assigns the reocrd to an user or team in async-mode
+    ///
+    function assignSync(id, entityname, assigneeId, assigneeEntityName) {
+
+        var xml = soapXml.getAssignXml(id, entityname, assigneeId, assigneeEntityName);
+
+        return executeRequest(xml, false);
+    }
+
+    ///
+    /// Assigns the reocrd to an user or team in async-mode
+    ///
+    function assign(id, entityname, assigneeId, assigneeEntityName) {
+
+        var xml = soapXml.getAssignXml(id, entityname, assigneeId, assigneeEntityName);
+
+        return executeRequest(xml, true);
+    }
+
+    ///
+    /// Executes a fetchxml-request and enables paging in async-mode
+    ///
+    function fetchMoreSync(fetchxml) {
+
+        var requestXml = soapXml.getFetchMoreXml(fetchxml),
+            response = executeRequest(requestXml, false);
+
+        // todo - include error handling
+        return soapParser.getFetchResult( response );
+    }
+
+    ///
+    /// Executes a fetchxml-request and enables paging in async-mode
+    ///
+    function fetchMore(fetchxml) {
+
+        var request = soapXml.getFetchMoreXml(fetchxml);
+
+        return executeRequest(request, true)
+            .then(function (response) {
+                return soapParser.getFetchResult(response);
+            });
+    }
+
+    ///
+    /// Aync-only: Loads all records (recursive with paging cookie)
+    ///
+    function fetchAll(fetchxml, opt_page) {
+
+        // defered object - promise for the "all" operation.
+        var dfd = $.Deferred(),
+            allRecords = [],
+            pageNumber = opt_page || 1,
+            pagingFetchxml = null;
+
+        // execute the fetch an receive the details (paging-cookie..)
+        fetchMore(fetchxml, true).then(function (result) {
+
+            // add the elements to the collection
+            allRecords = allRecords.concat(result.entities);
+
+            if (result.moreRecords) {
+
+                // increase the page-number
+                pageNumber++;
+
+                // add page-number & paging-cookie
+                pagingFetchxml = soapParser.setPagingDetails(fetchxml, pageNumber, result.pagingCookie);
+
+                // recursive call
+                fetchAll(pagingFetchxml, pageNumber).then(function (collection) {
+
+                    // add the items to the collection
+                    allRecords = allRecords.concat(collection);
+
+                    dfd.resolve(allRecords);
+
+                }, dfd.reject);
+            }
+            else {
+                // in case less then 50 records are included in the resul-set
+                dfd.resolve(allRecords);
+            }
+        }, dfd.reject);
+
+        return dfd.promise();
+    }
+
+    ///
+    /// Executes a fetch-request an returns a promies object in sync-mode
+    ///
+    function fetchSync(fetchxml) {
+
+        // todo - add error handling
+        var result = fetchMoreSync(fetchxml);
+
+        return result.entities;
+    }
+
+    ///
+    /// Executes a fetch-request an returns a promies object in async-mode
+    ///
+    function fetch(fetchxml) {
+
+        return fetchMore(fetchxml).then(function (result) {
+
+            return result.entities;
+        });
+    }
+
+    function getByIdSync(id, entityname, columns) {
+
+        var fetchxml = soapXml.buildGetByIdFetchXml(id, entityname, columns),
+            entities = fetchSync(fetchxml);
+
+        if(entities.length > 1){
+            throw new Error('Expected 1 record, found "' +entities.length+ '"');
+        }
+
+        // should return "null" instead of "undefined"
+        return entities[0] || null;
+    }
+
+    function getById(id, entityname, columns) {
+
+        var fetchxml = soapXml.buildGetByIdFetchXml(id, entityname, columns);
+
+        return fetch(fetchxml).then(function(entities){
+
+            if(entities.length > 1){
+                throw new Error('Expected 1 record, found "' +entities.length+ '"');
+            }
+
+            // should return "null" instead of "undefined"
+            return entities[0] || null;
+        });
+    }
+
+    ///
+    /// Public API
+    ///
+    window.CrmFetchKit = {
+        GetById: getById,
+        GetByIdSync: getByIdSync,
+        Fetch: fetch,
+        FetchSync: fetchSync,
+        FetchMore: fetchMore,
+        FetchMoreSync: fetchMoreSync,
+        FetchAll: fetchAll,
+        Assign: assign,
+        AssignSync: assignSync
+    };
+}(window, document));
+
+},{"./util/soapXmlMessages":4,"./util/soapXmlParser":5}],2:[function(require,module,exports){
+
+
+var escape = module.exports = function escape(string) {
+  return string.replace(/([&"<>'])/g, function(str, item) {
+            return escape.map[item];
+          })
+}
+
+var map = escape.map = {
+    '>': '&gt;'
+  , '<': '&lt;'
+  , "'": '&apos;'
+  , '"': '&quot;'
+  , '&': '&amp;'
+}
+},{}],3:[function(require,module,exports){
+module.exports = (function() {
+	'use strict';
+
+	// Type: JavaScript Implementation of the Entity Class
+	function BusinessEntity() {
+
+		this.Id = null;
+		this.logicalName = null;
+		this.attributes = {};
+	}
+
+	// Getter for the attributes
+	// E.g.: entity.getValue('accountid') or contact.getValue('parentaccountid', 'name')
+	BusinessEntity.prototype.getValue = function(attrname, opt_property) {
+
+		var attr = this.attributes[attrname];
+
+		if (attr) {
+
+			var attrType = attr.type;
+
+			switch (attrType) {
+
+				case 'a:EntityReference':
+					return (opt_property !== undefined) ? attr[opt_property] : attr.guid;
+
+				case 'a:OptionSetValue':
+					return (opt_property !== undefined) ? attr[opt_property] : attr.value;
+
+				default:
+					return attr.value;
+			}
+		}
+
+		return null;
+	};
+
+	return BusinessEntity;
+}());
+
+},{}],4:[function(require,module,exports){
+'use strict';
+
+var xmlEncode = require('xml-escape');
+
+// transforms an collection of attributes into an attribute element string
+function buildFetchAttributeXml(columns) {
+
+    var attributes = [];
+
+    for (var i = 0, max = columns.length; i < max; i++) {
+
+        attributes.push('<attribute name="' + columns[i] + '" />');
+    }
+
+    return attributes.join('');
+}
+
+// generates the fetchxml query for the "GetById" method
+function buildGetByIdFetchXml(id, entityname, columns) {
+
+    var idAttribute = entityname + 'id';
+
+    return [
+        '<fetch version="1.0">',
+        '  <entity name="' + entityname + '">',
+        buildFetchAttributeXml(columns),
+        '    <filter type="and">',
+        '      <condition attribute="' + idAttribute + '"',
+        '          operator="eq" value="' + id + '" />',
+        '    </filter>',
+        '  </entity>',
+        '</fetch>'
+    ].join('');
+}
+
+// generates the soap-xml message for the fetch-rquest
+function getFetchMoreXml(fetchxml) {
+
+    return [
+        '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">',
+        ' <s:Body>',
+        '  <Execute xmlns="http://schemas.microsoft.com/xrm/2011/Contracts/Services">',
+        '     <request i:type="b:RetrieveMultipleRequest" xmlns:b="http://schemas.microsoft.com/xrm/2011/Contracts" ',
+        '         xmlns:i="http://www.w3.org/2001/XMLSchema-instance">',
+        '             <b:Parameters xmlns:c="http://schemas.datacontract.org/2004/07/System.Collections.Generic">',
+        '             <b:KeyValuePairOfstringanyType>',
+        '                 <c:key>Query</c:key>',
+        '                 <c:value i:type="b:FetchExpression">',
+        '                     <b:Query>',
+        xmlEncode(fetchxml),
+        '                     </b:Query>',
+        '                 </c:value>',
+        '             </b:KeyValuePairOfstringanyType>',
+        '         </b:Parameters>',
+        '         <b:RequestId i:nil="true"/>',
+        '         <b:RequestName>RetrieveMultiple</b:RequestName>',
+        '     </request>',
+        ' </Execute>',
+        '</s:Body></s:Envelope>'
+    ].join('');
+}
+
+// generates the soap-xml message for the assign-rquest
+function getAssignXml(id, entityname, assigneeId, assigneeEntityName) {
+
+    return [
+        '<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">',
+        '  <s:Body>',
+        '    <Execute xmlns=\"http://schemas.microsoft.com/xrm/2011/Contracts/Services\" ',
+        '           xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">',
+        '      <request i:type=\"b:AssignRequest\" xmlns:a=\"http://schemas.microsoft.com/xrm/2011/Contracts\" ',
+        '           xmlns:b=\"http://schemas.microsoft.com/crm/2011/Contracts\">',
+        '        <a:Parameters xmlns:c=\"http://schemas.datacontract.org/2004/07/System.Collections.Generic\">',
+        '          <a:KeyValuePairOfstringanyType>',
+        '            <c:key>Target</c:key>',
+        '            <c:value i:type=\"a:EntityReference\">',
+        '              <a:Id>' + id + '</a:Id>',
+        '              <a:LogicalName>' + entityname + '</a:LogicalName>',
+        '              <a:Name i:nil=\"true\" />',
+        '            </c:value>',
+        '          </a:KeyValuePairOfstringanyType>',
+        '          <a:KeyValuePairOfstringanyType>',
+        '            <c:key>Assignee</c:key>',
+        '            <c:value i:type=\"a:EntityReference\">',
+        '              <a:Id>' + assigneeId + '</a:Id>',
+        '              <a:LogicalName>' + assigneeEntityName + '</a:LogicalName>',
+        '              <a:Name i:nil=\"true\" />',
+        '            </c:value>',
+        '          </a:KeyValuePairOfstringanyType>',
+        '        </a:Parameters>',
+        '        <a:RequestId i:nil=\"true\" />',
+        '        <a:RequestName>Assign</a:RequestName>',
+        '      </request>',
+        '    </Execute>',
+        '  </s:Body>',
+        '</s:Envelope>'
+    ].join('');
+}
+
+///
+/// Public API of the module
+///
+module.exports = {
+    getFetchMoreXml: getFetchMoreXml,
+    buildFetchAttributeXml: buildFetchAttributeXml,
+    getAssignXml: getAssignXml,
+    buildGetByIdFetchXml: buildGetByIdFetchXml,
+};
+
+},{"xml-escape":2}],5:[function(require,module,exports){
+var BusinessEntity = require('./BusinessEntity');
+
+module.exports = (function() {
+	'use strict';
+
+	/// IE9/10 and Chrome, Firefox, support "textContent" and IE8 using "text"
+	function getNodeText(node) {
+
+		return node.text !== undefined ? node.text : node.textContent;
+	}
+
+	// get a single child node that matches the specified name.
+	function getChildNode(xmlNode, nodeName) {
+
+		var childNode;
+
+		for (var i = 0, max = xmlNode.childNodes.length; i < max; i++) {
+
+			childNode = xmlNode.childNodes[i];
+
+			if (childNode.nodeName === nodeName) {
+				return childNode;
+			}
+		}
+	}
+
+	// Get the attribute regardless of the namespace
+	function getAttribute(xmlNode, attrName) {
+
+		var attr = null;
+
+		for (var i = 0; i < xmlNode.attributes.length; i++) {
+
+			attr = xmlNode.attributes[i];
+
+			if (attr.name === attrName) {
+				return attr.value;
+			}
+		}
+	}
+
+	// retrievs the text-value of the expression
+	function getChildNodeText(xml, xpathExpression) {
+
+		return getNodeText(getChildNode(xml, xpathExpression));
+	}
+
+	// injects the paging-cookie & page-count
+	function setPagingDetails(fetchxml, pageNumber, pagingCookie) {
+
+		var serializer = new XMLSerializer(),
+			parser = new DOMParser(),
+			fetchDoc = parser.parseFromString(fetchxml, 'text/xml'),
+			fetchElem = fetchDoc.getElement('fetch');
+
+		fetchElem.setAttribute('page', pageNumber);
+		fetchElem.setAttribute('paging-cookie', pagingCookie);
+
+		return serializer.serializeToString(fetchDoc);
+	}
+
+	// parses a date-string in ISO-format into a date-object
+	function dateObjectFromUTCString(utcString) {
+
+		var s = utcString.split(/\D/);
+
+		return new Date(Date.UTC(+s[0], --s[1], +s[2], +s[3], +s[4], +s[5], 0));
+	}
+
+	// extracts the error message generated by the Dynamics CRM server
+	function getSoapError(soapXml) {
+
+		var bodyNode, faultNode, faultStringNode;
+
+		try {
+			bodyNode = soapXml.firstChild.firstChild;
+			faultNode = getChildNode(bodyNode, 's:Fault');
+			faultStringNode = getChildNode(faultNode, 'faultstring');
+
+			return getNodeText(faultStringNode);
+		} catch (e) {
+			return "An error occurred when parsing the error returned from CRM server: " + e.message;
+		}
+	}
+
+	// extracts the entity-name, totalrecord count, etc.
+	// form the entity-collection xml-node
+	function getEntityCollectionDetails(entityCollectionNode) {
+
+		var entityName, moreRecords, pagingCookie,
+			totalRecordCount, entitiesNode, collectionChildNode;
+
+		// Try to get all child nodes in one pass
+		for (var m = 0; m < entityCollectionNode.childNodes.length; m++) {
+
+			collectionChildNode = entityCollectionNode.childNodes[m];
+
+			switch (collectionChildNode.nodeName) {
+
+				case "a:EntityName":
+					entityName = getNodeText(collectionChildNode);
+					break;
+				case "a:MoreRecords":
+					moreRecords = getNodeText(collectionChildNode) === "true";
+					break;
+				case "a:PagingCookie":
+					pagingCookie = getNodeText(collectionChildNode);
+					break;
+				case "a:TotalRecordCount":
+					totalRecordCount = parseInt(getNodeText(collectionChildNode), 10);
+					break;
+				case "a:Entities":
+					entitiesNode = collectionChildNode;
+					break;
+			}
+		}
+
+		return {
+			entityName: entityName,
+			moreRecords: moreRecords,
+			pagingCookie: pagingCookie,
+			totalRecordCount: totalRecordCount
+		};
+	}
+
+	// parses "Attribute" nodes of the SOAP-response
+	function parseAttibutes(attributesNode) {
+
+		var typedAttrSet = {},
+			attrNode, key, type, value;
+
+		for (var i = 0, max = attributesNode.childNodes.length; i < max; i++) {
+
+			attrNode = attributesNode.childNodes[i];
+
+			// Establish the key for the attribute
+			key = getChildNodeText(attrNode, 'b:key');
+			value = getChildNode(attrNode, 'b:value');
+			type = getAttribute(value, 'i:type');
+
+			// populate the object
+			typedAttrSet[key] = xmlNodeToAttributeObject(type, value);
+		}
+
+		return typedAttrSet;
+	}
+
+	// Parses a single xml-node -> transforms into BusinessEntity
+	function parseSingleEntityNode(entityNode) {
+
+		var entity = new BusinessEntity(),
+			childSet, item, key, value;
+
+		entity.Id = getChildNodeText(entityNode, 'a:Id');
+		entity.attributes = parseAttibutes(getChildNode(entityNode, 'a:Attributes'));
+		entity.logicalName = getChildNodeText(entityNode, 'a:LogicalName');
+
+		// parse the formated values
+		childSet = getChildNode(entityNode, 'a:FormattedValues').childNodes;
+
+		for (var i = 0, max = childSet.length; i < max; i++) {
+
+			item = childSet[i];
+			key = getChildNodeText(item, 'b:key');
+			value = getChildNodeText(item, 'b:value');
+
+			entity.attributes[key].formattedValue = value;
+		}
+
+		return entity;
+	}
+
+	// get a list of entities from an attr of type 'EntityCollection'
+	// e.g. 'Party Lists'
+	function getEntityCollection(entityCollectionNode) {
+
+		var entitiesNode = getChildNode(entityCollectionNode, 'a:Entities').childNodes,
+			collectionDetails = getEntityCollectionDetails(entityCollectionNode),
+			entities = [];
+
+		for (var i = 0, max = entitiesNode.length; i < max; i++) {
+			entities.push(parseSingleEntityNode(entitiesNode[i]));
+		}
+
+		return {
+			entityName: collectionDetails.entityName,
+			moreRecords: collectionDetails.moreRecords,
+			pagingCookie: collectionDetails.pagingCookie,
+			totalRecordCount: collectionDetails.totalRecordCount,
+			entities: entities
+		};
+	}
+
+	// Converst the xml definiton into an attribute object.
+	// The joined attributes are evaluated via a recursive call of this function
+	function xmlNodeToAttributeObject(type, xmlnode) {
+
+		var attr = {
+			'type': type
+		};
+
+		switch (type) {
+
+			case "a:OptionSetValue":
+				attr.value = parseInt(getNodeText(xmlnode), 10);
+				break;
+
+			case "a:EntityReference":
+				attr.guid = getChildNodeText(xmlnode, 'a:Id');
+				attr.name = getChildNodeText(xmlnode, 'a:Name');
+				attr.logicalName = getChildNodeText(xmlnode, 'a:LogicalName');
+				break;
+
+			case "a:EntityCollection":
+				attr.value = getEntityCollection(xmlnode);
+				break;
+
+			case "a:Money":
+				attr.value = parseFloat(getNodeText(xmlnode), 10);
+				break;
+
+			case "a:AliasedValue":
+
+				var aliasValue = getChildNode(xmlnode, 'a:Value'),
+					aliasType = getAttribute(aliasValue, 'i:type');
+
+				// recursive call
+				attr = xmlNodeToAttributeObject(aliasType, aliasValue);
+				break;
+
+			case 'c:int':
+				attr.value = parseInt(getNodeText(xmlnode), 10);
+				break;
+
+			case 'c:decimal':
+				attr.value = parseFloat(getNodeText(xmlnode));
+				break;
+
+			case 'c:dateTime':
+				attr.value = dateObjectFromUTCString(getNodeText(xmlnode));
+				break;
+
+			case 'c:boolean':
+				attr.value = (getNodeText(xmlnode) !== 'true') ? false : true;
+				break;
+
+			default:
+				attr.value = getNodeText(xmlnode);
+				break;
+		}
+
+		return attr;
+	}
+
+	// converts the response to a result-object that contains the
+	// entities, pagaingcookie...
+	function getFetchResult(data) {
+
+		// "s:Envelope/s:Body/ExecuteResponse/ExecuteResult"
+		var executeResult = data.firstChild.firstChild.firstChild.firstChild,
+			resultsNode = getChildNode(executeResult, 'a:Results'),
+			entityCollectionNode = getChildNode(resultsNode.firstChild, 'b:value');
+
+		return getEntityCollection(entityCollectionNode);
+	}
+
+	///
+	/// Public API
+	///
+	return {
+		setPagingDetails: setPagingDetails,
+		getSoapError: getSoapError,
+		getFetchResult: getFetchResult
+	};
+}());
+
+},{"./BusinessEntity":3}]},{},[1]);
+
     </script>
 
     <!-- setup mocha- otherwise "describe" is not defined -->
@@ -11574,756 +12335,970 @@ if (typeof exports == "object") {
         /*globals describe, it, $, chai, before, after, Xrm, _, specUtil*/
 
 'use strict';
-describe('CrmFetchKit API', function(){
-
-    // setup chai to use the "expect" style
-    var expect = chai.expect,
-        whoAmId = null;
-
-    before(function(){
-
-        // get id of the current user
-        whoAmId = Xrm.Page.context
-          .getUserId().toString().replace(/[{}]/g, '').toLowerCase();
-    });
-
-    it('should provided the public member "Fetch"', function(){
-        // assert
-        expect(CrmFetchKit).to.have.property('Fetch');
-    });
-
-    it('should provided the public member "FetchMore"', function(){
-        // assert
-        expect(CrmFetchKit).to.have.property('FetchMore');
-    });
-
-    it('should provided the public member "FetchAll"', function(){
-        // assert
-        expect(CrmFetchKit).to.have.property('FetchAll');
-    });
-
-    it('should provided the public member "Assign"', function(){
-        // assert
-        expect(CrmFetchKit).to.have.property('Assign');
-    });
-
-    describe('Fetch', function() {
-
-        var accountName = 'fetch-unit-test',
-            accountId = null,
-            accountRecord = {
-                Name: accountName,
-                AccountCategoryCode: { Value: 1 },
-                DoNotFax: true,
-                DoNotEMail: false
-            },
-            fetchxml = ['<fetch version="1.0" output-format="xml-platform"',
-                        '   mapping="logical">',
-                        '  <entity name="account">',
-                        '    <attribute name="name" />',
-                        '    <attribute name="accountid" />',
-                        '    <attribute name="accountcategorycode" />',
-                        '    <attribute name="createdon" />',
-                        '    <attribute name="createdby" />',
-                        '    <attribute name="donotfax" />',
-                        '    <attribute name="donotemail" />',
-                        '    <filter type="and">',
-                        '      <condition attribute="name"',
-                        '          operator="eq" value="' + accountName + '" />',
-                        '    </filter>',
-                        '  </entity>',
-                        '</fetch>'].join('');
-
-        ///
-        /// setup
-        ///
-        before(function(done) {
-            this.timeout(8000);
-
-            // create an account record
-            CrmRestKit.Create('Account', accountRecord)
-                .then(function(data){
-                    accountId = data.d.AccountId;
-                })
-                .fail(specUtil.onRestError)
-                .always(done);
-        });
-
-        ///
-        /// teardown
-        ///
-        after(function( done ) {
-            this.timeout(8000);
-
-            var filter = "(Name eq '" + accountName + "')",
-                columns = ['AccountId'];
-
-            // delete the created account
-            CrmRestKit
-                .ByQuery('Account', columns, filter, false)
-                .then(function (data) {
-
-                    $.each(data.d.results, function (index, account) {
-
-                        // perform the delete operaton is sync-mode
-                        CrmRestKit.Delete('Account', account.AccountId, false);
-                    });
-                })
-                .fail(specUtil.onRestError)
-                .always(done);
-        });
-
-        it('should yield a single account record', function( ){
-
-            // action - execute the fetchxml query
-            CrmFetchKit.Fetch(fetchxml, false)
-                .then(function(results){
-                    // assert - only one record is found
-                    expect(results.length).to.equal(1);
-                })
-                .fail(specUtil.onFetchError);
-        });
-
-        it('should yield the id of the loaded record', function(done){
-
-            CrmFetchKit.Fetch(fetchxml).then(function(entities){
-                var id = entities[0].getValue('accountid');
-
-                expect(id).to.exist();
-                expect(id).to.equal(accountId);
-            })
-            .always(done);
-        });
-
-        it('should executed the query in synchronous mode', function(){
-
-            var codeAfterQueryIsReached = false;
-
-            // action - execute the fetchxml query
-            CrmFetchKit.Fetch(fetchxml, false)
-                .then(function(){
-                    // assert - only one record is found
-                    expect(codeAfterQueryIsReached).to.equal(false);
-                })
-                .fail(specUtil.onFetchError);
-
-            codeAfterQueryIsReached = true;
-        });
-
-        it('should yield the "name" of the account', function(done){
-
-            // action - execute the fetchxml query
-            CrmFetchKit
-                .Fetch(fetchxml)
-                .then(function(results){
-                    // assert - only one record is found
-                    expect(results[0].getValue('name')).to.be.a('string');
-                    expect(results[0].getValue('name')).to.be.equal(accountName);
-
-                })
-                .fail(specUtil.onFetchError)
-                .always(done);
-        });
-
-        it('should yield the "logicalName" of the entity', function(done){
-
-            // action - execute the fetchxml query
-            CrmFetchKit
-                .Fetch(fetchxml)
-                .then(function(results){
-                    // assert - the logical-enity-name is account
-                    expect(results[0].logicalName).to.be.equal('account');
-
-                })
-                .fail(specUtil.onFetchError)
-                .always(done);
-        });
-
-        it('should yield the "category-code" (optionset) of the account', function(done){
-
-            // action - execute the fetchxml query
-            CrmFetchKit
-                .Fetch(fetchxml)
-                .then(function(results){
-                    // assert - the category-code is populated
-                    expect(results[0].getValue('accountcategorycode')).to.be.equal(1);
-                })
-                .fail(specUtil.onFetchError)
-                .always(done);
-        });
-
-        it('should yield the optionset-value as "number"', function(done){
-            // action - execute the fetchxml query
-            CrmFetchKit.Fetch(fetchxml).then(function(results){
-                // assert the category-code is of type "number"
-                expect(results[0].getValue('accountcategorycode')).to.be.a('number');
-            })
-            .fail(specUtil.onFetchError)
-            .always(done);
-        });
-
-        it('should yield the for an empty optionset-value "NULL" not "NaN"', function(done){
-            // action - execute the fetchxml query
-            CrmFetchKit.Fetch(fetchxml).then(function(results){
-
-                // assert - the category-code is of type "number"
-                expect(results[0].getValue('industrycode')).to.equal(null);
-            })
-            .fail(specUtil.onFetchError)
-            .always(done);
-        });
-
-        it('should yield the "createdon" attribute', function(done){
-
-            // action - execute the fetchxml query
-            CrmFetchKit.Fetch(fetchxml).then(function(results){
-
-                // assert - "createOn" is populated
-                expect(results[0].getValue('createdon')).to.not.equal(null);
-            })
-            .fail(specUtil.onFetchError)
-            .always(done);
-        });
-
-        it('should yield the "createdon" as date', function(done){
-
-            // action - execute the fetchxml query
-            CrmFetchKit.Fetch(fetchxml)
-                .then(function(results){
-
-                    // assert - "createOn" of type "Date"
-                    expect(results[0].getValue('createdon')).to.a('Date');
-                })
-                .fail(specUtil.onFetchError)
-                .always(done);
-        });
-
-        it('should yield the id of the lookup-value record', function(done){
-
-            // action - execute the fetchxml query
-            CrmFetchKit.Fetch(fetchxml).then(function(entities){
-
-                var account = entities[0];
-
-                // assert - "createBy" is a lookup to the "SystemUser" entity
-                expect(account.getValue('createdby')).to.equal(whoAmId);
-            })
-            .fail(specUtil.onFetchError)
-            .always(done);
-        });
-
-        it('should yield the entity-technicalname of the lookup-value record', function(done){
-
-            // action - execute the fetchxml query
-            CrmFetchKit.Fetch(fetchxml).then(function(entities){
-
-                var account = entities[0];
-
-                // assert - "createBy" is a lookup to the "SystemUser" entity
-                expect(account.getValue('createdby', 'logicalName' )).to.equal('systemuser');
-            })
-            .fail(specUtil.onFetchError)
-            .always(done);
-        });
-
-        it('should yield the primary attr. of the referenced record', function(done){
-
-            // action - execute the fetchxml query
-            CrmFetchKit.Fetch(fetchxml).then(function(entities){
-
-                var account = entities[0];
-
-                // assert - "createBy" is a lookup to the "SystemUser" entity
-                expect(account.getValue('createdby', 'name')).to.exist();
-            })
-            .fail(specUtil.onFetchError)
-            .always(done);
-        });
-
-        it('should yield the boolen attributes as boolean', function(done){
-
-            // action - execute the fetchxml query
-            CrmFetchKit.Fetch(fetchxml)
-                .then(function(entities){
-
-                    var account = entities[0];
-
-                    // assert - "donotmail"
-                    expect(account.getValue('donotemail')).to.be.a('boolean');
-                    expect(account.getValue('donotemail')).to.be.equal(false);
-
-                    // assert - "donotfax"
-                    expect(account.getValue('donotfax')).to.be.a('boolean');
-                    expect(account.getValue('donotfax')).to.be.equal(true);
-
-                })
-                .fail(specUtil.onFetchError)
-                .always(done);
-        });
-
-        it('should yield a single account records', function(done){
-
-            // action - execute the fetchxml query
-            CrmFetchKit
-                .Fetch(fetchxml)
-                .then(function(results){
-                    // assert - only one record is found
-                    expect(results.length).to.equal(1);
-                })
-                .fail(specUtil.onFetchError)
-                .always(done);
-        });
-
-        it('should executed the query in asynchronous mode', function(done){
-
-            var codeAfterQueryIsReached = false;
-
-            // action - execute the fetchxml query
-            CrmFetchKit.Fetch(fetchxml)
-                .then(function(){
-                    // assert - only one record is found
-                    expect(codeAfterQueryIsReached).to.equal(true);
-                })
-                .fail(specUtil.onFetchError)
-                .always(done);
-
-            codeAfterQueryIsReached = true;
-        });
-
-        it('should yield the intenral CRM attribute-type', function(done){
-
-            var optionSetAttr = 'preferredcontactmethodcode',
-                prefMethodFetchxml = [
-                    '<fetch version="1.0" output-format="xml-platform" mapping="logical">',
-                    '  <entity name="account">',
-                    '    <attribute name="name" />',
-                    '    <attribute name="' +optionSetAttr+ '" />',
-                    '    <filter type="and">',
-                    '      <condition attribute="name"',
-                    '       operator="eq" value="' + accountName + '" />',
-                    '    </filter>',
-                    '  </entity>',
-                    '</fetch>'].join( '' );
-
-            CrmFetchKit.Fetch(prefMethodFetchxml)
-                .then(function(results){
-
-                    var attr = results[0].getValue(optionSetAttr, 'type');
-
-                    // assert - internal type should be options-setvalue
-                    expect(attr).to.be.equal('a:OptionSetValue');
-                })
-                .fail(specUtil.onFetchError)
-                .always(done);
-        });
-
-        describe('supports joins /linked-data', function(){
-
-            var fetchxml = [
-                '<fetch version="1.0">',
-                '  <entity name="account">',
-                '    <attribute name="name" />',
-                '    <attribute name="accountid" />',
-                '    <attribute name="createdon" />',
-                '    <attribute name="createdby" />',
-                '    <filter type="and">',
-                '      <condition attribute="name" operator="eq" value="' + accountName + '" />',
-                '    </filter>',
-                '    <link-entity name="businessunit" from="businessunitid"',
-                '           to="owningbusinessunit" link-type="inner" alias="bu">',
-                '       <attribute name="name" />',
-                '       <filter>',
-                '           <condition attribute="parentbusinessunitid" operator="null" />',
-                '       </filter>',
-                '   </link-entity>',
-                '  </entity>',
-                '</fetch>'].join( '' );
-
-            it('should provided the joined data via the defined "alias"', function(done){
-
-                // action - executed fetchxml that uses an join
-                CrmFetchKit.Fetch(fetchxml)
-                    .then(function(results){
-
-                        // assert - the query uses "bu" as alias
-                        expect(results[0].getValue('bu.name')).to.exist();
-                    })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
-            });
-        });
-
-        describe('support for attributes for type enity-collection', function(){
-
-            var numberOfAttendees = 2,
-                requiredAttendees = [],
-                appointmentId = null;
-
-            // setup
-            before(function(done){
-                // increase the timeout limit for mocha
-                this.timeout(8000);
-
-                // create the needed test-data
-                specUtil.createContactAsAttendees(numberOfAttendees)
-                    .then(function(listOfAttendees){
-                        // store the generated attendees
-                        requiredAttendees = listOfAttendees;
-
-                        return requiredAttendees;
-                    })
-                    .then(specUtil.createAppointmentWithAttendees)
-                    .then(function(appointmentid){
-                        // keep the id of the created appointment
-                        appointmentId = appointmentid;
-                    })
-                    .always(done);
-            });
-
-            // teardown
-            after(function(){
-                this.timeout(40000);
-
-                // delete the test contact records
-                _.each(requiredAttendees, function(activityParty){
-
-                    CrmRestKit.Delete('Contact', activityParty.PartyId.Id);
-                });
-
-                // delete the test-appointment
-                CrmRestKit.Delete('Appointment', appointmentId);
-            });
-
-            it('should fetch the required-attendes (type of EntityCollection /PartyList)', function(done){
-
-                var fetchxml = [
-                    '<fetch version="1.0">',
-                    '  <entity name="appointment">',
-                    '    <attribute name="subject" />',
-                    '    <attribute name="requiredattendees" />',
-                    '    <filter type="and">',
-                    '      <condition attribute="activityid" operator="eq" value="' + appointmentId + '" />',
-                    '    </filter>',
-                    '  </entity>',
-                    '</fetch>'].join('');
-
-                CrmFetchKit.Fetch(fetchxml)
-                    .then(function(results){
-
-                        var attendees = results[0].getValue('requiredattendees');
-
-                        // assert - the list of attendees is retrieved
-                        expect(attendees.entities.length).to.equal(numberOfAttendees);
-                        // assert - the EntityCollection attr. is parsed
-                        expect(attendees.entities[0].getValue('partyid')).to.exist();
-                    })
-                    .always(done);
-            });
-        });
-    });
-
-    describe('FetchMore', function(){
-
-        var numberOfContacts = 15,
-            lastName = 'foobar-fetchmore',
-            countLimit = 10,
-            fetchxml = [
-                '<fetch version="1.0" output-format="xml-platform" ',
-                        'mapping="logical" ',
-                        'returntotalrecordcount="true" ',
-                        'count="' + countLimit + '">',
-                '  <entity name="contact">',
-                '    <attribute name="lastname" />',
-                '    <attribute name="contactid" />',
-                '    <filter type="and">',
-                '      <condition attribute="lastname" ',
-                '           operator="like" value="' + lastName + '%" />',
-                '    </filter>',
-                '  </entity>',
-                '</fetch>'].join('');
-
-        // setup
-        before(function(done){
-
-            // increase the execution-time-limit for mocha.js
-            this.timeout(15000);
-
-            // create some contact records for the tests
-            specUtil
-                .createSetOfContacts(numberOfContacts, lastName)
-                .always(function(/*notRelevantParameter*/){
-                    done();
-                });
-        });
-
-        // teardown
-        after(function(done){
-
-            // increase the execution-time-limit for mocha.js
-            this.timeout(15000);
-
-            specUtil
-                .deleteContactsByFilter("LastName eq '"+ lastName +"'")
-                .always(function(/*notRelevantParameter*/){
-                    done();
-                });
-        });
-
-        it('should support the asynchronous execution', function(done){
-
-            var codeAfterQueryIsReached = false;
-
-            // action - execute the query in async. mode (default)
-            CrmFetchKit.FetchMore(fetchxml)
-                .then(function(){
-
-                    // assert
-                    expect(codeAfterQueryIsReached).to.be.equal(true);
-                })
-                .always(done);
-
-            codeAfterQueryIsReached = true;
-        });
-
-        it('should support the synchronous execution', function(){
-
-            var codeAfterQueryIsReached = false;
-
-            // action - execute the query in sync. mode
-            CrmFetchKit.FetchMore(fetchxml, false).then(function(){
-
-                // assert
-                expect(codeAfterQueryIsReached).to.be.equal(false);
-            });
-
-            codeAfterQueryIsReached = true;
-        });
-
-        it('should provided the "totalRecordcount" information', function(done){
-
-            // action - execute the query. Due to the count-limit
-            // the query should only yield the first 10 records
-            CrmFetchKit.FetchMore(fetchxml).then(function(response){
-
-                // assert
-                expect(response).to.have.property('totalRecordCount');
-                expect(response.totalRecordCount).to.be.a('number');
-                expect(response.totalRecordCount).to.be.equal(numberOfContacts);
-            })
-            .always(done);
-        });
-
-        it('should provided the "moreRecords" information', function(done){
-
-            // action - execute the query
-            CrmFetchKit.FetchMore(fetchxml).then(function(response){
-
-                // assert - moreRecords is true
-                expect(response).to.have.property('moreRecords');
-                expect(response.moreRecords).to.be.a('boolean');
-                expect(response.moreRecords).to.be.equal(true);
-            })
-            .always(done);
-        });
-
-        it('should provided the "entityName" information', function(done){
-
-            // action - execute the query
-            CrmFetchKit.FetchMore(fetchxml).then(function(response){
-
-                // assert - moreRecords is true
-                expect(response).to.have.property('entityName');
-                expect(response.entityName).to.be.a('string');
-                expect(response.entityName).to.be.equal('contact');
-            })
-            .always(done);
-        });
-
-        it('should provided the loaded records in the "entities" property', function(done){
-
-            // action - execute the query
-            CrmFetchKit.FetchMore(fetchxml).then(function(response){
-
-                // assert - moreRecords is true
-                expect(response).to.have.property('entities');
-                expect(response.entities).to.be.a('array');
-                expect(response.entities.length).to.be.equal(countLimit);
-            })
-            .always(done);
-        });
-
-        it('should provided the "pagingCookie" information', function(done){
-
-            // action - execute the query
-            CrmFetchKit.FetchMore(fetchxml).then(function(response){
-
-                // assert - moreRecords is true
-                expect(response).to.have.property('pagingCookie');
-                expect(response.pagingCookie).to.be.a('string');
-            })
-            .always(done);
-        });
-    });
-
-    describe('FetchAll', function(){
-
-        var numnberOfContacts = 10,
-            lastName = 'foobar - fetchall',
-            queryCountLimit = 5,
-            fetchxml = [
-                '<fetch version="1.0" count="' + queryCountLimit + '">',
-                '  <entity name="contact">',
-                '    <attribute name="lastname" />',
-                '    <attribute name="contactid" />',
-                '    <filter type="and">',
-                '      <condition attribute="lastname"',
-                '       operator="like" value="' + lastName + '" />',
-                '    </filter>',
-                '  </entity>',
-                '</fetch>'].join('');
-
-        // setup
-        before(function(done){
-
-            // increase the execution-time-limit for mocha.js
-            this.timeout(9000);
-
-            // create some contact records for the tests
-            specUtil
-                .createSetOfContacts(numnberOfContacts, lastName)
-                .always(function(/*notRelevantParameter*/){
-                    done();
-                });
-        });
-
-        // teardown
-        after(function(done){
-            // increase the execution-time-limit for mocha.js
-            this.timeout(9000);
-
-            specUtil
-                .deleteContactsByFilter("LastName eq '"+ lastName +"'")
-                .always(function(/*notRelevantParameter*/){
-                    done();
-                });
-        });
-
-        it('should execute the query in async mode', function(done){
-            // arrange
-            var codeAfterQueryIsReached = false;
-            // action
-            CrmFetchKit.Fetch(fetchxml)
-                .then(function(){
-
-                    // assert
-                    expect(codeAfterQueryIsReached).to.equal(true);
-                })
-                .always(done);
-
-            codeAfterQueryIsReached = true;
-        });
-
-        it('should load all contact records', function(done){
-
-            // action - execute the query
-            CrmFetchKit.FetchAll(fetchxml)
-                .then(function(entities){
-                    // assert
-                    expect(entities.length).to.equal(numnberOfContacts);
-                })
-                .always(done);
-        });
-    });
-
-    describe('Assign', function(){
-
-        // Note: This integration-test depends on an existing user and an team
-        var contactid = null,
-            contactlastname = 'foobar',
-            userlastname = 'kayir',
-            userid = null,
-            teamname = 'Integration-Test-Team',
-            teamid = null;
-
-        // setup
-        before(function(done){
-            // increase timeout limit of mocha
-            this.timeout(8000);
-
-            var contactPromise, teamPromise, userPromise,
-                userfilter = "LastName eq '"+userlastname+"'",
-                teamfilter = "Name eq '" +teamname+ "'";
-
-            // arrange - create an contact record
-            contactPromise = specUtil.createContactRecord(contactlastname);
-
-            // arrange - get the team record
-            teamPromise = CrmRestKit
-                .ByQuery('Team', ['TeamId'], teamfilter)
-                .then(function(data /*notNeededPrameter*/){
-                    // only the entities records are relevant
-                    return data.d.results;
-                });
-
-            // arrange - get the required
-            userPromise = CrmRestKit
-                .ByQuery('SystemUser', ['SystemUserId'], userfilter)
-                .then(function(data /*notNeededPrameter*/){
-                    // only the entities records are relevant
-                    return data.d.results;
-                });
-
-             // defere the tests until the data is loaded /created
-             $.when(contactPromise, teamPromise, userPromise)
-                .then(function(contactData, teamEntities, userEntities){
-                    contactid = contactData.d.ContactId;
-                    teamid = teamEntities[0].TeamId;
-                    userid = userEntities[0].SystemUserId;
-                })
-                .always(done);
-        });
-
-        // teardown
-        after(function(done){
-            // increase timeout limit of mocha
-            this.timeout(4000);
-
-            specUtil
-                .deleteContactsByFilter("LastName eq '"+ contactlastname +"'")
-                .always(done);
-        });
-
-        it('should change the owner of the record to a team', function(done){
-
-            CrmFetchKit.Assign(contactid, 'contact', teamid, 'team')
-                .then(function(){
-
-                    // get the contact record
-                    CrmRestKit.Retrieve('Contact', contactid, ['Owner'])
-                        .then(function(contact){
-                            expect(contact.Owner.Id).to.equal(teamid);
-                        });
-                })
-                .always(done);
-        });
-
-        it('should change the owner of the record to a another user', function(done){
-
-            CrmFetchKit.Assign(contactid, 'contact', teamid, 'team')
-                .then(function(){
-
-                    // get the contact record
-                    CrmRestKit.Retrieve('Contact', contactid, ['Owner'])
-                        .then(function(contact){
-                            expect(contact.Owner.Id).to.equal(userid);
-                        });
-                })
-                .always(done);
-        });
-
-
-
-    });
+describe('CrmFetchKit API', function() {
+
+	// setup chai to use the "expect" style
+	var expect = chai.expect,
+		whoAmId = null;
+
+	before(function() {
+
+		// get id of the current user
+		whoAmId = Xrm.Page.context
+			.getUserId().toString().replace(/[{}]/g, '').toLowerCase();
+	});
+
+	it('should provided the public member "Fetch"', function() {
+		// assert
+		expect(CrmFetchKit).to.have.property('Fetch');
+	});
+
+	it('should provided the public member "FetchMore"', function() {
+		// assert
+		expect(CrmFetchKit).to.have.property('FetchMore');
+	});
+
+	it('should provided the public member "FetchAll"', function() {
+		// assert
+		expect(CrmFetchKit).to.have.property('FetchAll');
+	});
+
+	it('should provided the public member "Assign"', function() {
+		// assert
+		expect(CrmFetchKit).to.have.property('Assign');
+	});
+
+	describe('GetById', function() {
+
+		var accountName = 'getById-integration-test',
+			accountId = null,
+			accountRecord = {
+				Name: accountName,
+				AccountCategoryCode: {
+					Value: 1
+				},
+				DoNotFax: true,
+				DoNotEMail: false
+			},
+			columns = ['name', 'donotfax', 'donotemail', 'createdon'];
+
+		///
+		/// setup
+		///
+		before(function(done) {
+			this.timeout(8000);
+
+			// create an account record
+			CrmRestKit.Create('Account', accountRecord).then(function(data) {
+					accountId = data.d.AccountId;
+				})
+				.fail(specUtil.onRestError)
+				.always(done);
+		});
+
+		///
+		/// teardown
+		///
+		after(function(done) {
+			this.timeout(5000);
+
+			var filter = "(Name eq '" + accountName + "')";
+
+			specUtil.deleteAccountsByFilter(filter).always(done);
+		});
+
+		it('should yield an single account record', function(done) {
+
+			// action
+			CrmFetchKit
+				.GetById(accountId, 'account', columns)
+				.then(function(account) {
+					// assert
+					expect(account).to.exist();
+				}).always(done);
+		});
+
+		it('should yield an single account record when using the sync counterpart', function() {
+
+			// action
+			var account = CrmFetchKit.GetByIdSync(accountId, 'account', columns);
+
+			// assert
+			expect(account).to.exist();
+		});
+
+		it('should yield "null" in case a record does not exist', function(){
+
+			var fakeId = 'b887b4fd-f777-455f-a306-c763e904447e';
+
+			// action
+			var account = CrmFetchKit.GetByIdSync(fakeId, 'account', columns);
+
+			// assert
+			expect(account).to.be.null();
+		});
+	});
+
+	describe('Fetch', function() {
+
+		var accountName = 'fetch-integration-test',
+			accountId = null,
+			accountRecord = {
+				Name: accountName,
+				AccountCategoryCode: {
+					Value: 1
+				},
+				DoNotFax: true,
+				DoNotEMail: false
+			},
+			fetchxml = [
+				'<fetch version="1.0">',
+				'  <entity name="account">',
+				'    <attribute name="name" />',
+				'    <attribute name="accountid" />',
+				'    <attribute name="accountcategorycode" />',
+				'    <attribute name="createdon" />',
+				'    <attribute name="createdby" />',
+				'    <attribute name="donotfax" />',
+				'    <attribute name="donotemail" />',
+				'    <filter type="and">',
+				'      <condition attribute="name"',
+				'          operator="eq" value="' + accountName + '" />',
+				'    </filter>',
+				'  </entity>',
+				'</fetch>'
+			].join('');
+
+		///
+		/// setup
+		///
+		before(function(done) {
+			this.timeout(8000);
+
+			// create an account record
+			CrmRestKit.Create('Account', accountRecord).then(function(data) {
+					accountId = data.d.AccountId;
+				})
+				.fail(specUtil.onRestError)
+				.always(done);
+		});
+
+		///
+		/// teardown
+		///
+		after(function(done) {
+			this.timeout(3000);
+
+			var filter = "(Name eq '" + accountName + "')";
+
+			specUtil.deleteAccountsByFilter(filter).always(done);
+		});
+
+		describe('in sync exectuion via "FetchSync"', function() {
+
+			it('should yield a single account record', function() {
+
+				// action - execute the fetchxml query
+				var result = CrmFetchKit.FetchSync(fetchxml);
+
+				expect(result.length).to.equal(1);
+			});
+
+			it('should yield the id of the loaded record', function() {
+
+				var entities = CrmFetchKit.FetchSync(fetchxml);
+				var id = entities[0].getValue('accountid');
+
+				expect(id).to.exist();
+				expect(id).to.equal(accountId);
+			});
+
+			it('should yield the "name" of the account', function() {
+
+				// action - execute the fetchxml query
+				var entities = CrmFetchKit.FetchSync(fetchxml);
+
+				// assert - only one record is found
+				expect(entities[0].getValue('name')).to.be.a('string');
+				expect(entities[0].getValue('name')).to.be.equal(accountName);
+			});
+
+			it('should yield the "logicalName" of the entity', function() {
+
+				// action - execute the fetchxml query
+				var entities = CrmFetchKit.FetchSync(fetchxml);
+
+				// assert - the logical-enity-name is account
+				expect(entities[0].logicalName).to.be.equal('account');
+			});
+
+			it('should yield the "category-code" (optionset) of the account', function() {
+				// action - execute the fetchxml query
+				var entities = CrmFetchKit.FetchSync(fetchxml);
+
+				// assert - the category-code is populated
+				expect(entities[0].getValue('accountcategorycode')).to.be.equal(1);
+			});
+
+			it('should yield the optionset-value as "number"', function() {
+				// action - execute the fetchxml query
+				var entities = CrmFetchKit.FetchSync(fetchxml);
+
+				// assert the category-code is of type "number"
+				expect(entities[0].getValue('accountcategorycode')).to.be.a('number');
+			});
+
+			it('should yield the for an empty optionset-value "NULL" not "NaN"', function() {
+				// action - execute the fetchxml query
+				var entities = CrmFetchKit.FetchSync(fetchxml);
+
+				// assert - the category-code is of type "number"
+				expect(entities[0].getValue('industrycode')).to.equal(null);
+			});
+
+			it('should yield the "createdon" attribute', function() {
+
+				// action - execute the fetchxml query
+				var entities = CrmFetchKit.FetchSync(fetchxml);
+
+				// assert - "createOn" is populated
+				expect(entities[0].getValue('createdon')).to.not.equal(null);
+			});
+
+			it('should yield the "createdon" as date', function() {
+
+				// action - execute the fetchxml query
+				var entities = CrmFetchKit.FetchSync(fetchxml);
+
+				// assert - "createOn" of type "Date"
+				expect(entities[0].getValue('createdon')).to.a('Date');
+			});
+
+			it('should yield the id of the lookup-value record', function() {
+
+				// action - execute the fetchxml query
+				var entities = CrmFetchKit.FetchSync(fetchxml);
+
+				// assert - "createBy" is a lookup to the "SystemUser" entity
+				expect(entities[0].getValue('createdby')).to.equal(whoAmId);
+			});
+
+			it('should yield the entity-technicalname of the lookup-value record', function() {
+
+				// action - execute the fetchxml query
+				var entities = CrmFetchKit.FetchSync(fetchxml);
+
+				// assert - "createBy" is a lookup to the "SystemUser" entity
+				expect(entities[0].getValue('createdby', 'logicalName')).to.equal('systemuser');
+			});
+
+			it('should yield the primary attr. of the referenced record', function() {
+
+				// action - execute the fetchxml query
+				var entities = CrmFetchKit.FetchSync(fetchxml);
+
+				// assert - "createBy" is a lookup to the "SystemUser" entity
+				expect(entities[0].getValue('createdby', 'name')).to.exist();
+			});
+
+			it('should yield the boolen attributes as boolean', function() {
+
+				// action - execute the fetchxml query
+				var entities = CrmFetchKit.FetchSync(fetchxml);
+				var account = entities[0];
+
+				// assert - "donotmail"
+				expect(account.getValue('donotemail')).to.be.a('boolean');
+				expect(account.getValue('donotemail')).to.be.equal(false);
+
+				// assert - "donotfax"
+				expect(account.getValue('donotfax')).to.be.a('boolean');
+				expect(account.getValue('donotfax')).to.be.equal(true);
+			});
+
+			it('should yield a single account records', function() {
+
+				// action - execute the fetchxml query
+				var entities = CrmFetchKit.FetchSync(fetchxml);
+
+				// assert - only one record is found
+				expect(entities.length).to.equal(1);
+			});
+
+			it('should yield the intenral CRM attribute-type', function() {
+
+				var optionSetAttr = 'preferredcontactmethodcode',
+					prefMethodFetchxml = [
+						'<fetch version="1.0">',
+						'  <entity name="account">',
+						'    <attribute name="name" />',
+						'    <attribute name="' + optionSetAttr + '" />',
+						'    <filter type="and">',
+						'      <condition attribute="name"',
+						'       operator="eq" value="' + accountName + '" />',
+						'    </filter>',
+						'  </entity>',
+						'</fetch>'
+					].join('');
+
+				var results = CrmFetchKit.FetchSync(prefMethodFetchxml);
+				var attr = results[0].getValue(optionSetAttr, 'type');
+
+				// assert - internal type should be options-setvalue
+				expect(attr).to.be.equal('a:OptionSetValue');
+			});
+		});
+
+		describe('in async execution', function() {
+
+			it('should yield a single account record', function(done) {
+
+				// action - execute the fetchxml query
+				CrmFetchKit.Fetch(fetchxml)
+					.then(function(results) {
+						// assert - only one record is found
+						expect(results.length).to.equal(1);
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+
+			it('should yield the id of the loaded record', function(done) {
+
+				CrmFetchKit.Fetch(fetchxml).then(function(entities) {
+						var id = entities[0].getValue('accountid');
+
+						expect(id).to.exist();
+						expect(id).to.equal(accountId);
+					})
+					.always(done);
+			});
+
+			it('should yield the "name" of the account', function(done) {
+
+				// action - execute the fetchxml query
+				CrmFetchKit
+					.Fetch(fetchxml)
+					.then(function(results) {
+						// assert - only one record is found
+						expect(results[0].getValue('name')).to.be.a('string');
+						expect(results[0].getValue('name')).to.be.equal(accountName);
+
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+
+			it('should yield the "logicalName" of the entity', function(done) {
+
+				// action - execute the fetchxml query
+				CrmFetchKit
+					.Fetch(fetchxml)
+					.then(function(results) {
+						// assert - the logical-enity-name is account
+						expect(results[0].logicalName).to.be.equal('account');
+
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+
+			it('should yield the "category-code" (optionset) of the account', function(done) {
+
+				// action - execute the fetchxml query
+				CrmFetchKit
+					.Fetch(fetchxml)
+					.then(function(results) {
+						// assert - the category-code is populated
+						expect(results[0].getValue('accountcategorycode')).to.be.equal(1);
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+
+			it('should yield the optionset-value as "number"', function(done) {
+				// action - execute the fetchxml query
+				CrmFetchKit.Fetch(fetchxml).then(function(results) {
+						// assert the category-code is of type "number"
+						expect(results[0].getValue('accountcategorycode')).to.be.a('number');
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+
+			it('should yield the for an empty optionset-value "NULL" not "NaN"', function(done) {
+				// action - execute the fetchxml query
+				CrmFetchKit.Fetch(fetchxml).then(function(results) {
+
+						// assert - the category-code is of type "number"
+						expect(results[0].getValue('industrycode')).to.equal(null);
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+
+			it('should yield the "createdon" attribute', function(done) {
+
+				// action - execute the fetchxml query
+				CrmFetchKit.Fetch(fetchxml).then(function(results) {
+
+						// assert - "createOn" is populated
+						expect(results[0].getValue('createdon')).to.not.equal(null);
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+
+			it('should yield the "createdon" as date', function(done) {
+
+				// action - execute the fetchxml query
+				CrmFetchKit.Fetch(fetchxml)
+					.then(function(results) {
+
+						// assert - "createOn" of type "Date"
+						expect(results[0].getValue('createdon')).to.a('Date');
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+
+			it('should yield the id of the lookup-value record', function(done) {
+
+				// action - execute the fetchxml query
+				CrmFetchKit.Fetch(fetchxml).then(function(entities) {
+
+						var account = entities[0];
+
+						// assert - "createBy" is a lookup to the "SystemUser" entity
+						expect(account.getValue('createdby')).to.equal(whoAmId);
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+
+			it('should yield the entity-technicalname of the lookup-value record', function(done) {
+
+				// action - execute the fetchxml query
+				CrmFetchKit.Fetch(fetchxml).then(function(entities) {
+
+						var account = entities[0];
+
+						// assert - "createBy" is a lookup to the "SystemUser" entity
+						expect(account.getValue('createdby', 'logicalName')).to.equal('systemuser');
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+
+			it('should yield the primary attr. of the referenced record', function(done) {
+
+				// action - execute the fetchxml query
+				CrmFetchKit.Fetch(fetchxml).then(function(entities) {
+
+						var account = entities[0];
+
+						// assert - "createBy" is a lookup to the "SystemUser" entity
+						expect(account.getValue('createdby', 'name')).to.exist();
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+
+			it('should yield the boolen attributes as boolean', function(done) {
+
+				// action - execute the fetchxml query
+				CrmFetchKit.Fetch(fetchxml)
+					.then(function(entities) {
+
+						var account = entities[0];
+
+						// assert - "donotmail"
+						expect(account.getValue('donotemail')).to.be.a('boolean');
+						expect(account.getValue('donotemail')).to.be.equal(false);
+
+						// assert - "donotfax"
+						expect(account.getValue('donotfax')).to.be.a('boolean');
+						expect(account.getValue('donotfax')).to.be.equal(true);
+
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+
+			it('should yield a single account records', function(done) {
+
+				// action - execute the fetchxml query
+				CrmFetchKit
+					.Fetch(fetchxml)
+					.then(function(results) {
+						// assert - only one record is found
+						expect(results.length).to.equal(1);
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+
+			it('should executed the query in asynchronous mode', function(done) {
+
+				var codeAfterQueryIsReached = false;
+
+				// action - execute the fetchxml query
+				CrmFetchKit.Fetch(fetchxml)
+					.then(function() {
+						// assert - only one record is found
+						expect(codeAfterQueryIsReached).to.equal(true);
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+
+				codeAfterQueryIsReached = true;
+			});
+
+			it('should yield the intenral CRM attribute-type', function(done) {
+
+				var optionSetAttr = 'preferredcontactmethodcode',
+					prefMethodFetchxml = [
+						'<fetch version="1.0" output-format="xml-platform" mapping="logical">',
+						'  <entity name="account">',
+						'    <attribute name="name" />',
+						'    <attribute name="' + optionSetAttr + '" />',
+						'    <filter type="and">',
+						'      <condition attribute="name"',
+						'       operator="eq" value="' + accountName + '" />',
+						'    </filter>',
+						'  </entity>',
+						'</fetch>'
+					].join('');
+
+				CrmFetchKit.Fetch(prefMethodFetchxml)
+					.then(function(results) {
+
+						var attr = results[0].getValue(optionSetAttr, 'type');
+
+						// assert - internal type should be options-setvalue
+						expect(attr).to.be.equal('a:OptionSetValue');
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+		});
+
+		describe('supports joins /linked-data', function() {
+
+			var fetchxml = [
+				'<fetch version="1.0">',
+				'  <entity name="account">',
+				'    <attribute name="name" />',
+				'    <attribute name="accountid" />',
+				'    <attribute name="createdon" />',
+				'    <attribute name="createdby" />',
+				'    <filter type="and">',
+				'      <condition attribute="name" operator="eq" value="' + accountName + '" />',
+				'    </filter>',
+				'    <link-entity name="businessunit" from="businessunitid"',
+				'           to="owningbusinessunit" link-type="inner" alias="bu">',
+				'       <attribute name="name" />',
+				'       <filter>',
+				'           <condition attribute="parentbusinessunitid" operator="null" />',
+				'       </filter>',
+				'   </link-entity>',
+				'  </entity>',
+				'</fetch>'
+			].join('');
+
+			it('should provided the joined data via the defined "alias"', function(done) {
+
+				// action - executed fetchxml that uses an join
+				CrmFetchKit.Fetch(fetchxml)
+					.then(function(results) {
+
+						// assert - the query uses "bu" as alias
+						expect(results[0].getValue('bu.name')).to.exist();
+					})
+					.fail(specUtil.onFetchError)
+					.always(done);
+			});
+		});
+
+		describe('support for attributes for type enity-collection', function() {
+
+			var numberOfAttendees = 2,
+				requiredAttendees = [],
+				appointmentId = null;
+
+			// setup
+			before(function(done) {
+				// increase the timeout limit for mocha
+				this.timeout(8000);
+
+				// create the needed test-data
+				specUtil.createContactAsAttendees(numberOfAttendees)
+					.then(function(listOfAttendees) {
+						// store the generated attendees
+						requiredAttendees = listOfAttendees;
+
+						return requiredAttendees;
+					})
+					.then(specUtil.createAppointmentWithAttendees)
+					.then(function(appointmentid) {
+						// keep the id of the created appointment
+						appointmentId = appointmentid;
+					})
+					.always(done);
+			});
+
+			// teardown
+			after(function() {
+				this.timeout(40000);
+
+				// delete the test contact records
+				_.each(requiredAttendees, function(activityParty) {
+
+					CrmRestKit.Delete('Contact', activityParty.PartyId.Id);
+				});
+
+				// delete the test-appointment
+				CrmRestKit.Delete('Appointment', appointmentId);
+			});
+
+			it('should fetch the required-attendes (type of EntityCollection /PartyList)', function(done) {
+
+				var fetchxml = [
+					'<fetch version="1.0">',
+					'  <entity name="appointment">',
+					'    <attribute name="subject" />',
+					'    <attribute name="requiredattendees" />',
+					'    <filter type="and">',
+					'      <condition attribute="activityid" operator="eq" value="' + appointmentId + '" />',
+					'    </filter>',
+					'  </entity>',
+					'</fetch>'
+				].join('');
+
+				CrmFetchKit.Fetch(fetchxml)
+					.then(function(results) {
+
+						var attendees = results[0].getValue('requiredattendees');
+
+						// assert - the list of attendees is retrieved
+						expect(attendees.entities.length).to.equal(numberOfAttendees);
+						// assert - the EntityCollection attr. is parsed
+						expect(attendees.entities[0].getValue('partyid')).to.exist();
+					})
+					.always(done);
+			});
+		});
+	});
+
+	describe('FetchMore', function() {
+
+		var numberOfContacts = 15,
+			lastName = 'foobar-fetchmore',
+			countLimit = 10,
+			fetchxml = [
+				'<fetch version="1.0" output-format="xml-platform" ',
+				'mapping="logical" ',
+				'returntotalrecordcount="true" ',
+				'count="' + countLimit + '">',
+				'  <entity name="contact">',
+				'    <attribute name="lastname" />',
+				'    <attribute name="contactid" />',
+				'    <filter type="and">',
+				'      <condition attribute="lastname" ',
+				'           operator="like" value="' + lastName + '%" />',
+				'    </filter>',
+				'  </entity>',
+				'</fetch>'
+			].join('');
+
+		// setup
+		before(function(done) {
+
+			// increase the execution-time-limit for mocha.js
+			this.timeout(15000);
+
+			// create some contact records for the tests
+			specUtil
+				.createSetOfContacts(numberOfContacts, lastName)
+				.always(function( /*notRelevantParameter*/ ) {
+					done();
+				});
+		});
+
+		// teardown
+		after(function(done) {
+
+			// increase the execution-time-limit for mocha.js
+			this.timeout(15000);
+
+			specUtil
+				.deleteContactsByFilter("LastName eq '" + lastName + "'")
+				.always(function( /*notRelevantParameter*/ ) {
+					done();
+				});
+		});
+
+		it('should support the asynchronous execution', function(done) {
+
+			var codeAfterQueryIsReached = false;
+
+			// action - execute the query in async. mode (default)
+			CrmFetchKit.FetchMore(fetchxml)
+				.then(function() {
+
+					// assert
+					expect(codeAfterQueryIsReached).to.be.equal(true);
+				})
+				.always(done);
+
+			codeAfterQueryIsReached = true;
+		});
+
+		it('should support the synchronous execution', function() {
+
+			// action - execute the query in sync. mode
+			var response = CrmFetchKit.FetchMoreSync(fetchxml);
+
+			// assert
+			expect(response).to.exist();
+		});
+
+		it('should provide the "totalRecordcount" information', function(done) {
+
+			// action - execute the query. Due to the count-limit
+			// the query should only yield the first 10 records
+			CrmFetchKit.FetchMore(fetchxml).then(function(response) {
+					// assert
+					expect(response.totalRecordCount).to.exist();
+				})
+				.always(done);
+		});
+
+		it('should provide the "totalRecordcount" information as number', function(done) {
+
+			// action - execute the query. Due to the count-limit
+			// the query should only yield the first 10 records
+			CrmFetchKit.FetchMore(fetchxml).then(function(response) {
+
+				// assert
+				expect(response.totalRecordCount).to.be.a('number');
+			})
+			.always(done);
+		});
+
+		it('should provide the "moreRecords" information', function(done) {
+
+			// action - execute the query
+			CrmFetchKit.FetchMore(fetchxml).then(function(response) {
+
+					// assert - moreRecords is true
+					expect(response).to.have.property('moreRecords');
+					expect(response.moreRecords).to.be.a('boolean');
+					expect(response.moreRecords).to.be.equal(true);
+				})
+				.always(done);
+		});
+
+		it('should provide the "entityName" information', function(done) {
+
+			// action - execute the query
+			CrmFetchKit.FetchMore(fetchxml).then(function(response) {
+
+					// assert - moreRecords is true
+					expect(response).to.have.property('entityName');
+					expect(response.entityName).to.be.a('string');
+					expect(response.entityName).to.be.equal('contact');
+				})
+				.always(done);
+		});
+
+		it('should provide the loaded records in the "entities" property', function(done) {
+
+			// action - execute the query
+			CrmFetchKit.FetchMore(fetchxml).then(function(response) {
+
+					// assert - moreRecords is true
+					expect(response).to.have.property('entities');
+					expect(response.entities).to.be.a('array');
+					expect(response.entities.length).to.be.equal(countLimit);
+				})
+				.always(done);
+		});
+
+		it('should provide the "pagingCookie" information', function(done) {
+
+			// action - execute the query
+			CrmFetchKit.FetchMore(fetchxml).then(function(response) {
+
+					// assert - moreRecords is true
+					expect(response).to.have.property('pagingCookie');
+					expect(response.pagingCookie).to.be.a('string');
+				})
+				.always(done);
+		});
+	});
+
+	describe('FetchAll', function() {
+
+		var numnberOfContacts = 10,
+			lastName = 'foobar - fetchall',
+			queryCountLimit = 5,
+			fetchxml = [
+				'<fetch version="1.0" count="' + queryCountLimit + '">',
+				'  <entity name="contact">',
+				'    <attribute name="lastname" />',
+				'    <attribute name="contactid" />',
+				'    <filter type="and">',
+				'      <condition attribute="lastname"',
+				'       operator="like" value="' + lastName + '" />',
+				'    </filter>',
+				'  </entity>',
+				'</fetch>'
+			].join('');
+
+		// setup
+		before(function(done) {
+
+			// increase the execution-time-limit for mocha.js
+			this.timeout(9000);
+
+			// create some contact records for the tests
+			specUtil
+				.createSetOfContacts(numnberOfContacts, lastName)
+				.always(function( /*notRelevantParameter*/ ) {
+					done();
+				});
+		});
+
+		// teardown
+		after(function(done) {
+			// increase the execution-time-limit for mocha.js
+			this.timeout(9000);
+
+			specUtil
+				.deleteContactsByFilter("LastName eq '" + lastName + "'")
+				.always(function( /*notRelevantParameter*/ ) {
+					done();
+				});
+		});
+
+		it('should execute the query in async mode', function(done) {
+			// arrange
+			var codeAfterQueryIsReached = false;
+			// action
+			CrmFetchKit.Fetch(fetchxml)
+				.then(function() {
+
+					// assert
+					expect(codeAfterQueryIsReached).to.equal(true);
+				})
+				.always(done);
+
+			codeAfterQueryIsReached = true;
+		});
+
+		it('should load all contact records', function(done) {
+			this.timeout(8000);
+
+			// action - execute the query
+			CrmFetchKit.FetchAll(fetchxml)
+				.then(function(entities) {
+					// assert
+					expect(entities.length).to.equal(numnberOfContacts);
+				})
+				.always(done);
+		});
+	});
+
+	describe('Assign', function() {
+
+		// Note: This integration-test depends on an existing user and an team
+		var contactid = null,
+			contactlastname = 'foobar',
+			userlastname = 'kayir',
+			userid = null,
+			teamname = 'Integration-Test-Team',
+			teamid = null;
+
+		// setup
+		before(function(done) {
+			// increase timeout limit of mocha
+			this.timeout(8000);
+
+			var contactPromise, teamPromise, userPromise,
+				userfilter = "LastName eq '" + userlastname + "'",
+				teamfilter = "Name eq '" + teamname + "'";
+
+			// arrange - create an contact record
+			contactPromise = specUtil.createContactRecord(contactlastname);
+
+			// arrange - get the team record
+			teamPromise = CrmRestKit
+				.ByQuery('Team', ['TeamId'], teamfilter)
+				.then(function(data /*notNeededPrameter*/ ) {
+					// only the entities records are relevant
+					return data.d.results;
+				});
+
+			// arrange - get the required
+			userPromise = CrmRestKit
+				.ByQuery('SystemUser', ['SystemUserId'], userfilter)
+				.then(function(data /*notNeededPrameter*/ ) {
+					// only the entities records are relevant
+					return data.d.results;
+				});
+
+			// defere the tests until the data is loaded /created
+			$.when(contactPromise, teamPromise, userPromise)
+				.then(function(contactData, teamEntities, userEntities) {
+					contactid = contactData.d.ContactId;
+					teamid = teamEntities[0].TeamId;
+					userid = userEntities[0].SystemUserId;
+				})
+				.always(done);
+		});
+
+		// teardown
+		after(function(done) {
+			// increase timeout limit of mocha
+			this.timeout(4000);
+
+			specUtil
+				.deleteContactsByFilter("LastName eq '" + contactlastname + "'")
+				.always(done);
+		});
+
+		it('should change the owner of the record to a team', function(done) {
+
+			CrmFetchKit.Assign(contactid, 'contact', teamid, 'team')
+				.then(function() {
+
+					// get the contact record
+					CrmRestKit.Retrieve('Contact', contactid, ['Owner'])
+						.then(function(contact) {
+							expect(contact.Owner.Id).to.equal(teamid);
+						});
+				})
+				.always(done);
+		});
+
+		it('should change the owner of the record to a another user', function(done) {
+
+			CrmFetchKit.Assign(contactid, 'contact', teamid, 'team')
+				.then(function() {
+
+					// get the contact record
+					CrmRestKit.Retrieve('Contact', contactid, ['Owner'])
+						.then(function(contact) {
+							expect(contact.Owner.Id).to.equal(userid);
+						});
+				})
+				.always(done);
+		});
+
+
+
+	});
 });
 
       </script>

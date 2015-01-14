@@ -6,10 +6,12 @@ var uglify = require('gulp-uglify');
 var replace = require('gulp-replace');
 var stylish = require('jshint-stylish');
 var fileinclude = require('gulp-file-include');
-var zip = require('gulp-zip');
 var util = require('util');
 var karma = require('karma').server;
 var header = require('gulp-header');
+var source = require('vinyl-source-stream');
+var browserify = require('browserify');
+
 var pkg = require('./package.json');
 
 
@@ -50,7 +52,7 @@ gulp.task('compress-helpers', function() {
 ///
 /// applies the minifcations
 ///
-gulp.task('compress', ['compress-helpers'], function() {
+gulp.task('compress', ['browserify','compress-helpers'], function() {
 
     var banner = [
         '// <%= name %>.js <%= version %>',
@@ -58,11 +60,11 @@ gulp.task('compress', ['compress-helpers'], function() {
         '// <%= author %> \n',
         ].join('\n');
 
-    return gulp.src('src/CrmFetchKit.js')
+    return gulp.src('build/CrmFetchKit.bundle.js')
         .pipe(uglify())
         .pipe(rename({suffix: '.min'}))
         .pipe( header(banner, pkg))
-        .pipe(gulp.dest('./src') );
+        .pipe(gulp.dest('./build') );
 });
 
 ///
@@ -79,17 +81,13 @@ gulp.task('build-integrationtest', function() {
         .pipe(gulp.dest('./test'));
 });
 
-///
-/// geneates the zip file for codeplex
-///
-gulp.task('codeplex-zip', function () {
+// using vinyl-source-strea to browserify the module
+gulp.task('browserify', function() {
 
-    var version = pkg.version,
-        zipFileName = util.format('CrmFetchKit-%s.zip', version);
-
-    return gulp.src(['src/*', 'README.md'])
-        .pipe(zip(zipFileName))
-        .pipe(gulp.dest('.'));
+    return browserify('./src/CrmFetchKit.js')
+        .bundle()
+        .pipe(source('CrmFetchKit.bundle.js'))
+        .pipe(gulp.dest('./build/'));
 });
 
 ///
@@ -97,7 +95,7 @@ gulp.task('codeplex-zip', function () {
 ///
 gulp.task('build', ['compress'], function(){
 
-    gulp.start('codeplex-zip');
+    // gulp.start('codeplex-zip');
     gulp.start('build-integrationtest');
 });
 

@@ -18,7 +18,8 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       './test/spec/*.js',
-      './src/CrmFetchKit.min.js'
+      './build/CrmFetchKit.bundle.js'
+      //'./src/CrmFetchKit.min.js'
     ],
 
 

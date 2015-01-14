@@ -1,4 +1,4 @@
-/*globals describe, chai, it*/
+/*globals describe, chai, it, BusinessEntity*/
 
 'use strict';
 describe('CrmFetchKit', function(){
@@ -8,11 +8,19 @@ describe('CrmFetchKit', function(){
     describe('API', function(){
 
         it('should provide a "Fetch" method', function(){
-            expect(CrmFetchKit).to.exist();
+            expect(CrmFetchKit.Fetch).to.exist();
+        });
+
+        it('should provide a "FetchSync" method', function(){
+            expect(CrmFetchKit.FetchSync).to.exist();
         });
 
         it('should provide a "FetchMore" method', function(){
-            expect(CrmFetchKit).to.to.exist();
+            expect(CrmFetchKit.FetchMore).to.to.exist();
+        });
+
+        it('should provide a "FetchMoreSync" method', function(){
+            expect(CrmFetchKit.FetchMoreSync).to.to.exist();
         });
 
         it('should provide a "FetchAll" method', function(){
@@ -21,6 +29,26 @@ describe('CrmFetchKit', function(){
 
         it('should provide a "Assign" method', function(){
             expect(CrmFetchKit.Assign).to.exist();
+        });
+
+        it('should provide a "AssignSync" method', function(){
+            expect(CrmFetchKit.AssignSync).to.exist();
+        });
+
+        it('should provide a "GetById" method', function(){
+            expect(CrmFetchKit.GetById).to.exist();
+        });
+    });
+
+    describe('By using "brwoserify" the global namespace should not be cluttered', function(){
+
+        it('"Business Entity" should not be part of the global namespace', function(){
+            expect(typeof BusinessEntity).to.be.equal('undefined');
+        });
+
+        it('should ensure that "convertXmlToAttributeObject" is not public', function(){
+
+            expect(typeof convertXmlToAttributeObject).to.be.equal('undefined');
         });
     });
 });

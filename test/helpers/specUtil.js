@@ -141,6 +141,33 @@
     }
 
     ///
+    /// returns an promise that is resolved once all delete operation
+    /// are completed
+    ///
+    function deleteAccountsByFilter(filter) {
+
+        var setOfDeletePromises = [];
+
+        return CrmRestKit
+            .ByQueryAll('Account', ['AccountId'], filter)
+            .then(function(data){
+
+                _.each(data, function(contactrecord){
+                    setOfDeletePromises.push(
+                        CrmRestKit.Delete('Account', contactrecord.AccountId)
+                    );
+                });
+            })
+            .then(function(){
+
+                // return a promise that is resolved once all
+                // deleted-promises are completed
+                return $.when.apply($, setOfDeletePromises);
+            });
+    }
+
+
+    ///
     /// Public API
     ///
     window.specUtil = {
@@ -149,6 +176,7 @@
         createSetOfContacts: createSetOfContacts,
         createContactRecord: createContactRecord,
         deleteContactsByFilter: deleteContactsByFilter,
+        deleteAccountsByFilter: deleteAccountsByFilter,
         onFetchError: onFetchError,
         onRestError: onRestError,
     };
