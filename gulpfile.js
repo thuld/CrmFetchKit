@@ -6,7 +6,6 @@ var uglify = require('gulp-uglify');
 var replace = require('gulp-replace');
 var stylish = require('jshint-stylish');
 var fileinclude = require('gulp-file-include');
-var util = require('util');
 var karma = require('karma').server;
 var header = require('gulp-header');
 var source = require('vinyl-source-stream');
@@ -21,12 +20,10 @@ var pkg = require('./package.json');
 gulp.task('lint', function(){
 
     var sourcefiles = [
-        './src/CrmFetchKit.js',
+        './src/**/*.js',
         './test/spec/*.js',
         './test/helpers/*.js',
-        '!./test/helpers/*.min.js',
-        '!./test/helpers/CrmRestKit*.js'
-        /*, './js/*.js'*/];
+        '!./test/helpers/*.min.js'];
 
     return gulp.src( sourcefiles )
         .pipe(jshint('.jshintrc'))
@@ -34,25 +31,9 @@ gulp.task('lint', function(){
 });
 
 ///
-/// performs the minify operation for the test-script files
-///
-gulp.task('compress-helpers', function() {
-
-    // exclude the *.min.js files
-    var sourcefiles = [
-        './test/helpers/*.js',
-        '!./test/helpers/*.min.js'];
-
-    return gulp.src(sourcefiles)
-        .pipe(uglify())
-        .pipe( rename({suffix: '.min'}))
-        .pipe(gulp.dest('./test/helpers/'));
-});
-
-///
 /// applies the minifcations
 ///
-gulp.task('compress', ['browserify','compress-helpers'], function() {
+gulp.task('compress', ['browserify'], function() {
 
     var banner = [
         '// <%= name %>.js <%= version %>',
@@ -84,7 +65,7 @@ gulp.task('build-integrationtest', function() {
 // using vinyl-source-strea to browserify the module
 gulp.task('browserify', function() {
 
-    return browserify('./src/CrmFetchKit.js')
+    return browserify('./src/main.js')
         .bundle()
         .pipe(source('CrmFetchKit.bundle.js'))
         .pipe(gulp.dest('./build/'));

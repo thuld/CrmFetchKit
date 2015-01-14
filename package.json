@@ -2,7 +2,7 @@
   "name": "CrmFetchKit",
   "version": "3.0.0",
   "description": "Library for Dynamics CRM that allows the execution of fetchxml-queries via JavaScript",
-  "main": "./src/CrmFetchKit.js",
+  "main": "./src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
