@@ -2,7 +2,7 @@
 
 describe('CrmFetchKit', function(){
     'use strict';
-    
+
     var expect = chai.expect;
 
     describe('API', function(){
@@ -46,7 +46,7 @@ describe('CrmFetchKit', function(){
             expect(typeof BusinessEntity).to.be.equal('undefined');
         });
 
-        it('should ensure that "convertXmlToAttributeObject" is not public', function(){
+        it('should ensure that "soapParser" is not public', function(){
 
             expect(typeof convertXmlToAttributeObject).to.be.equal('undefined');
         });

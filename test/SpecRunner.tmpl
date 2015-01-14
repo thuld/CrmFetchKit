@@ -15,15 +15,18 @@
     <div id="mocha"></div>
 
     <script>
-      @@include("../bower_components/underscore/underscore-min.js")
-      @@include("../bower_components/mocha/mocha.js")
-      @@include("../bower_components/jquery/dist/jquery.min.js")
-      @@include("../bower_components/chai/chai.js")
 
-      @@include("helpers/CrmRestKit-2.6.1.min.js")
-      @@include("helpers/specUtil.js")
+        @@include("../node_modules/bluebird/js/browser/bluebird.min.js")
 
-      @@include("../build/CrmFetchKit.bundle.js")
+        @@include("../bower_components/underscore/underscore-min.js")
+        @@include("../bower_components/mocha/mocha.js")
+        @@include("../bower_components/jquery/dist/jquery.min.js")
+        @@include("../bower_components/chai/chai.js")
+
+        @@include("helpers/CrmRestKit-2.6.1.min.js")
+        @@include("helpers/specUtil.js")
+
+        @@include("../build/CrmFetchKit.bundle.js")
     </script>
 
     <!-- setup mocha- otherwise "describe" is not defined -->

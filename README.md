@@ -207,6 +207,12 @@ Uses [browserify](http://browserify.org/) for the dependency management.
 
 The jQuery dependency will be removed. The version 3.x will use [bluebird](https://github.com/petkaantonov/bluebird) as Promise library.
 
+Due to the use of bluebird instead of jQuery, some method are no longer available by the returned promise:
+- `always` instead use 'finally'
+- `fail` instead use `catch`
+
+*Note:* Unfortunately depends "CrmRestKit.js" (use for the integration-tests) still jQuery. Therefor is it not possible to remove the jQuery dependency for now.
+
 ##Version 2.x
 The version 2.x of the library uses [Mocha.js](http://mochajs.org/) as testing framework (instead of [QUnit](http://qunitjs.com/)) and [Gulp.js](http://gulpjs.com/) for the task automation (linting, build, minify, etc.)
 

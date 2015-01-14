@@ -48,17 +48,40 @@ describe('CrmFetchKit API', function() {
         });
     });
 
+    describe('Error handling of the library should be conform with the Promise/A+ specification', function(){
+
+        it('should call the "reject" handler', function(done){
+
+            var fakeAttr = 'THIS_ATTR_DOES_NOT_EXIST',
+                fetchxml = [
+                '<fetch version="1.0">',
+                '  <entity name="account">',
+                '    <attribute name="name" />',
+                '    <attribute name="' +fakeAttr+ '" />',
+                '  </entity>',
+                '</fetch>'].join('');
+
+            // action - try to yield an attr that is not in the data model
+            CrmFetchKit.Fetch(fetchxml).catch(function(err){
+
+                    // assert
+                    expect(err).to.have.string(fakeAttr);
+                    done();
+            });
+        });
+    });
+
     describe("The 'GetById' operation", function() {
 
         var accountName = 'getById-integration-test',
             accountId = null,
             accountRecord = {
                 Name: accountName,
+                DoNotFax: true,
+                DoNotEMail: false,
                 AccountCategoryCode: {
                     Value: 1
-                },
-                DoNotFax: true,
-                DoNotEMail: false
+                }
             },
             columns = ['name', 'donotfax', 'donotemail', 'createdon'];
 
@@ -68,12 +91,10 @@ describe('CrmFetchKit API', function() {
         before(function(done) {
             this.timeout(8000);
 
-            // create an account record
-            CrmRestKit.Create('Account', accountRecord).then(function(data) {
+            specUtil.createAccount(accountRecord).then(function(data) {
                     accountId = data.d.AccountId;
-                })
-                .fail(specUtil.onRestError)
-                .always(done);
+                    done();
+                });
         });
 
         ///
@@ -84,7 +105,9 @@ describe('CrmFetchKit API', function() {
 
             var filter = "(Name eq '" + accountName + "')";
 
-            specUtil.deleteAccountsByFilter(filter).always(done);
+            specUtil
+                .deleteAccountsByFilter(filter)
+                .then(done);
         });
 
         it('should yield an single account record', function(done) {
@@ -95,7 +118,8 @@ describe('CrmFetchKit API', function() {
                 .then(function(account) {
                     // assert
                     expect(account).to.exist();
-                }).always(done);
+
+                }).finally(done);
         });
 
         it('should yield an single account record when using the sync counterpart', function() {
@@ -156,11 +180,10 @@ describe('CrmFetchKit API', function() {
             this.timeout(8000);
 
             // create an account record
-            CrmRestKit.Create('Account', accountRecord).then(function(data) {
-                    accountId = data.d.AccountId;
-                })
-                .fail(specUtil.onRestError)
-                .always(done);
+            specUtil.createAccount(accountRecord).then(function(data) {
+                accountId = data.d.AccountId;
+                done();
+            });
         });
 
         ///
@@ -171,7 +194,9 @@ describe('CrmFetchKit API', function() {
 
             var filter = "(Name eq '" + accountName + "')";
 
-            specUtil.deleteAccountsByFilter(filter).always(done);
+            specUtil
+                .deleteAccountsByFilter(filter)
+                .then(done);
         });
 
         describe('in sync exectuion via "FetchSync"', function() {
@@ -339,8 +364,8 @@ describe('CrmFetchKit API', function() {
                         // assert - only one record is found
                         expect(results.length).to.equal(1);
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
 
             it('should yield the id of the loaded record', function(done) {
@@ -351,7 +376,7 @@ describe('CrmFetchKit API', function() {
                         expect(id).to.exist();
                         expect(id).to.equal(accountId);
                     })
-                    .always(done);
+                    .finally(done);
             });
 
             it('should yield the "name" of the account', function(done) {
@@ -365,8 +390,8 @@ describe('CrmFetchKit API', function() {
                         expect(results[0].getValue('name')).to.be.equal(accountName);
 
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
 
             it('should yield the "logicalName" of the entity', function(done) {
@@ -379,8 +404,8 @@ describe('CrmFetchKit API', function() {
                         expect(results[0].logicalName).to.be.equal('account');
 
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
 
             it('should yield the "category-code" (optionset) of the account', function(done) {
@@ -392,8 +417,8 @@ describe('CrmFetchKit API', function() {
                         // assert - the category-code is populated
                         expect(results[0].getValue('accountcategorycode')).to.be.equal(1);
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
 
             it('should yield the optionset-value as "number"', function(done) {
@@ -402,8 +427,8 @@ describe('CrmFetchKit API', function() {
                         // assert the category-code is of type "number"
                         expect(results[0].getValue('accountcategorycode')).to.be.a('number');
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
 
             it('should yield the for an empty optionset-value "NULL" not "NaN"', function(done) {
@@ -413,8 +438,8 @@ describe('CrmFetchKit API', function() {
                         // assert - the category-code is of type "number"
                         expect(results[0].getValue('industrycode')).to.equal(null);
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
 
             it('should yield the "createdon" attribute', function(done) {
@@ -425,8 +450,8 @@ describe('CrmFetchKit API', function() {
                         // assert - "createOn" is populated
                         expect(results[0].getValue('createdon')).to.not.equal(null);
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
 
             it('should yield the "createdon" as date', function(done) {
@@ -438,8 +463,8 @@ describe('CrmFetchKit API', function() {
                         // assert - "createOn" of type "Date"
                         expect(results[0].getValue('createdon')).to.a('Date');
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
 
             it('should yield the id of the lookup-value record', function(done) {
@@ -452,8 +477,8 @@ describe('CrmFetchKit API', function() {
                         // assert - "createBy" is a lookup to the "SystemUser" entity
                         expect(account.getValue('createdby')).to.equal(whoAmId);
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
 
             it('should yield the entity-technicalname of the lookup-value record', function(done) {
@@ -466,8 +491,8 @@ describe('CrmFetchKit API', function() {
                         // assert - "createBy" is a lookup to the "SystemUser" entity
                         expect(account.getValue('createdby', 'logicalName')).to.equal('systemuser');
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
 
             it('should yield the primary attr. of the referenced record', function(done) {
@@ -480,8 +505,8 @@ describe('CrmFetchKit API', function() {
                         // assert - "createBy" is a lookup to the "SystemUser" entity
                         expect(account.getValue('createdby', 'name')).to.exist();
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
 
             it('should yield the boolen attributes as boolean', function(done) {
@@ -501,8 +526,8 @@ describe('CrmFetchKit API', function() {
                         expect(account.getValue('donotfax')).to.be.equal(true);
 
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
 
             it('should yield a single account records', function(done) {
@@ -514,8 +539,8 @@ describe('CrmFetchKit API', function() {
                         // assert - only one record is found
                         expect(results.length).to.equal(1);
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
 
             it('should executed the query in asynchronous mode', function(done) {
@@ -528,8 +553,8 @@ describe('CrmFetchKit API', function() {
                         // assert - only one record is found
                         expect(codeAfterQueryIsReached).to.equal(true);
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
 
                 codeAfterQueryIsReached = true;
             });
@@ -558,8 +583,8 @@ describe('CrmFetchKit API', function() {
                         // assert - internal type should be options-setvalue
                         expect(attr).to.be.equal('a:OptionSetValue');
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
         });
 
@@ -595,8 +620,8 @@ describe('CrmFetchKit API', function() {
                         // assert - the query uses "bu" as alias
                         expect(results[0].getValue('bu.name')).to.exist();
                     })
-                    .fail(specUtil.onFetchError)
-                    .always(done);
+                    .catch(specUtil.onFetchError)
+                    .finally(done);
             });
         });
 
@@ -623,8 +648,8 @@ describe('CrmFetchKit API', function() {
                     .then(function(appointmentid) {
                         // keep the id of the created appointment
                         appointmentId = appointmentid;
-                    })
-                    .always(done);
+                        done();
+                    });
             });
 
             // teardown
@@ -633,12 +658,11 @@ describe('CrmFetchKit API', function() {
 
                 // delete the test contact records
                 _.each(requiredAttendees, function(activityParty) {
-
-                    CrmRestKit.Delete('Contact', activityParty.PartyId.Id);
+                    specUtil.deleteContactById(activityParty.PartyId.Id);
                 });
 
                 // delete the test-appointment
-                CrmRestKit.Delete('Appointment', appointmentId);
+                specUtil.deleteAppointmentById(appointmentId);
             });
 
             it('should fetch the required-attendes (type of EntityCollection /PartyList)', function(done) {
@@ -665,7 +689,7 @@ describe('CrmFetchKit API', function() {
                         // assert - the EntityCollection attr. is parsed
                         expect(attendees.entities[0].getValue('partyid')).to.exist();
                     })
-                    .always(done);
+                    .finally(done);
             });
         });
     });
@@ -700,7 +724,7 @@ describe('CrmFetchKit API', function() {
             // create some contact records for the tests
             specUtil
                 .createSetOfContacts(numberOfContacts, lastName)
-                .always(function( /*notRelevantParameter*/ ) {
+                .then(function(/*notRelevantParameter*/){
                     done();
                 });
         });
@@ -713,7 +737,7 @@ describe('CrmFetchKit API', function() {
 
             specUtil
                 .deleteContactsByFilter("LastName eq '" + lastName + "'")
-                .always(function( /*notRelevantParameter*/ ) {
+                .then(function( /*notRelevantParameter*/ ) {
                     done();
                 });
         });
@@ -725,11 +749,10 @@ describe('CrmFetchKit API', function() {
             // action - execute the query in async. mode (default)
             CrmFetchKit.FetchMore(fetchxml)
                 .then(function() {
-
                     // assert
                     expect(codeAfterQueryIsReached).to.be.equal(true);
                 })
-                .always(done);
+                .finally(done);
 
             codeAfterQueryIsReached = true;
         });
@@ -751,7 +774,7 @@ describe('CrmFetchKit API', function() {
                     // assert
                     expect(response.totalRecordCount).to.exist();
                 })
-                .always(done);
+                .finally(done);
         });
 
         it('should provide the "totalRecordcount" information as number', function(done) {
@@ -763,7 +786,7 @@ describe('CrmFetchKit API', function() {
                 // assert
                 expect(response.totalRecordCount).to.be.a('number');
             })
-            .always(done);
+            .finally(done);
         });
 
         it('should provide the "moreRecords" information', function(done) {
@@ -776,7 +799,7 @@ describe('CrmFetchKit API', function() {
                     expect(response.moreRecords).to.be.a('boolean');
                     expect(response.moreRecords).to.be.equal(true);
                 })
-                .always(done);
+                .finally(done);
         });
 
         it('should provide the "entityName" information', function(done) {
@@ -789,7 +812,7 @@ describe('CrmFetchKit API', function() {
                     expect(response.entityName).to.be.a('string');
                     expect(response.entityName).to.be.equal('contact');
                 })
-                .always(done);
+                .finally(done);
         });
 
         it('should provide the loaded records in the "entities" property', function(done) {
@@ -802,7 +825,7 @@ describe('CrmFetchKit API', function() {
                     expect(response.entities).to.be.a('array');
                     expect(response.entities.length).to.be.equal(countLimit);
                 })
-                .always(done);
+                .finally(done);
         });
 
         it('should provide the "pagingCookie" information', function(done) {
@@ -814,7 +837,7 @@ describe('CrmFetchKit API', function() {
                     expect(response).to.have.property('pagingCookie');
                     expect(response.pagingCookie).to.be.a('string');
                 })
-                .always(done);
+                .finally(done);
         });
     });
 
@@ -845,7 +868,7 @@ describe('CrmFetchKit API', function() {
             // create some contact records for the tests
             specUtil
                 .createSetOfContacts(numnberOfContacts, lastName)
-                .always(function( /*notRelevantParameter*/ ) {
+                .then(function( /*notRelevantParameter*/ ) {
                     done();
                 });
         });
@@ -857,7 +880,7 @@ describe('CrmFetchKit API', function() {
 
             specUtil
                 .deleteContactsByFilter("LastName eq '" + lastName + "'")
-                .always(function( /*notRelevantParameter*/ ) {
+                .then(function( /*notRelevantParameter*/ ) {
                     done();
                 });
         });
@@ -872,7 +895,7 @@ describe('CrmFetchKit API', function() {
                     // assert
                     expect(codeAfterQueryIsReached).to.equal(true);
                 })
-                .always(done);
+                .finally(done);
 
             codeAfterQueryIsReached = true;
         });
@@ -886,7 +909,7 @@ describe('CrmFetchKit API', function() {
                     // assert
                     expect(entities.length).to.equal(numnberOfContacts);
                 })
-                .always(done);
+                .finally(done);
         });
     });
 
@@ -905,37 +928,21 @@ describe('CrmFetchKit API', function() {
             // increase timeout limit of mocha
             this.timeout(8000);
 
-            var contactPromise, teamPromise, userPromise,
-                userfilter = "LastName eq '" + userlastname + "'",
+            var userfilter = "LastName eq '" + userlastname + "'",
                 teamfilter = "Name eq '" + teamname + "'";
 
-            // arrange - create an contact record
-            contactPromise = specUtil.createContactRecord(contactlastname);
-
-            // arrange - get the team record
-            teamPromise = CrmRestKit
-                .ByQuery('Team', ['TeamId'], teamfilter)
-                .then(function(data /*notNeededPrameter*/ ) {
-                    // only the entities records are relevant
-                    return data.d.results;
-                });
-
-            // arrange - get the required
-            userPromise = CrmRestKit
-                .ByQuery('SystemUser', ['SystemUserId'], userfilter)
-                .then(function(data /*notNeededPrameter*/ ) {
-                    // only the entities records are relevant
-                    return data.d.results;
-                });
-
-            // defere the tests until the data is loaded /created
-            $.when(contactPromise, teamPromise, userPromise)
-                .then(function(contactData, teamEntities, userEntities) {
-                    contactid = contactData.d.ContactId;
-                    teamid = teamEntities[0].TeamId;
-                    userid = userEntities[0].SystemUserId;
-                })
-                .always(done);
+            // bluebird magic
+            Promise.props({
+                contactData: specUtil.createContactRecord(contactlastname),
+                teamEntities: specUtil.getTeamByFilter(teamfilter),
+                userEntities: specUtil.getSystemUserByFilter(userfilter)
+            }).then(function(result){
+                // defere the tests until the data is loaded /created
+                contactid = result.contactData.d.ContactId;
+                teamid = result.teamEntities[0].TeamId;
+                userid = result.userEntities[0].SystemUserId;
+            })
+            .finally(done);
         });
 
         // teardown
@@ -945,25 +952,24 @@ describe('CrmFetchKit API', function() {
 
             specUtil
                 .deleteContactsByFilter("LastName eq '" + contactlastname + "'")
-                .always(done);
+                .then(done);
         });
 
         describe("supports the async execution via 'Assign'", function(){
-			
+
             it('should change the owner of the record to a team', function(done) {
 
                 // action
                 CrmFetchKit.Assign(contactid, 'contact', teamid, 'team')
                 .then(function() {
 
-                    // get the contact record
-                    CrmRestKit.Retrieve('Contact', contactid, ['Owner'])
-                    .then(function(contact) {
+                    specUtil.getContactById(contactid, ['Owner']).then(function(contact){
+
                         // assert
                         expect(contact.Owner.Id).to.equal(teamid);
                     });
                 })
-                .always(done);
+                .finally(done);
             });
 
             it('should change the owner of the record to a another user', function(done) {
@@ -972,14 +978,13 @@ describe('CrmFetchKit API', function() {
                 CrmFetchKit.Assign(contactid, 'contact', teamid, 'team')
                 .then(function() {
 
-                    // get the contact record
-                    CrmRestKit.Retrieve('Contact', contactid, ['Owner'])
-                    .then(function(contact) {
+                    specUtil.getContactById(contactid, ['Owner']).then(function(contact){
+
                         // assert
                         expect(contact.Owner.Id).to.equal(userid);
                     });
                 })
-                .always(done);
+                .finally(done);
             });
         });
 
@@ -991,7 +996,7 @@ describe('CrmFetchKit API', function() {
                 CrmFetchKit.AssignSync(contactid, 'contact', teamid, 'team');
 
                 // get the assinged contact record
-                CrmRestKit.Retrieve('Contact', contactid, ['Owner'], false)
+                specUtil.getContactByIdSync(contactid, ['Owner'])
                     .then(function(contact) {
                         // assert
                         expect(contact.Owner.Id).to.equal(teamid);
@@ -1004,7 +1009,7 @@ describe('CrmFetchKit API', function() {
                 CrmFetchKit.AssignSync(contactid, 'contact', teamid, 'team');
 
                 // get the contact record
-                CrmRestKit.Retrieve('Contact', contactid, ['Owner'], false)
+                specUtil.getContactByIdSync(contactid, ['Owner'])
                     .then(function(contact) {
                         // assert
                         expect(contact.Owner.Id).to.equal(userid);

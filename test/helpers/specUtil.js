@@ -1,4 +1,4 @@
-/*globals $, _*/
+/*globals $, _, CrmRestKit*/
 
 ///
 /// Module provides some helper functions. The test-specs should not be cluttered with
@@ -18,8 +18,11 @@
         console.log('---------------------------');
         console.log( 'status:' + status );
         console.log('errorThrown' + errorThrown.toString());
+
+        throw new Error(msg);
     }
 
+    /*
     ///
     /// error-handler for the CrmFetchKit
     ///
@@ -32,6 +35,7 @@
         console.log( 'status:' + status );
         console.log('errorThrown' + errorThrown.toString());
     }
+    */
 
     ///
     /// transforms on odata record of type contact into an activity-party record
@@ -167,17 +171,72 @@
     }
 
 
+    function createAccount(accountData){
+
+        // create an account record and return promise
+        return CrmRestKit.Create('Account', accountData)
+            .fail(onRestError);
+    }
+
+
+    function deleteContactById(contactid){
+
+        return CrmRestKit.Delete('Contact', contactid);
+    }
+
+    function deleteAppointmentById(appid){
+        // delete the test-appointment
+        return CrmRestKit.Delete('Appointment', appid);
+    }
+
+    function getTeamByFilter(filter){
+
+        return CrmRestKit
+            .ByQuery('Team', ['TeamId'], filter)
+            .then(function(data /*notNeededPrameter*/ ) {
+                // only the entities records are relevant
+                return data.d.results;
+            });
+    }
+
+    function getSystemUserByFilter(filter) {
+
+        return CrmRestKit
+            .ByQuery('SystemUser', ['SystemUserId'], filter)
+            .then(function(data /*notNeededPrameter*/ ) {
+                // only the entities records are relevant
+                return data.d.results;
+            });
+    }
+
+    function getContactById(id, columns) {
+
+        return CrmRestKit.Retrieve('Contact', id, columns);
+    }
+
+    function getContactByIdSync(id, columns) {
+
+        return CrmRestKit.Retrieve('Contact', id, columns, false);
+    }
+
     ///
     /// Public API
     ///
     window.specUtil = {
+        getTeamByFilter:getTeamByFilter,
+        getSystemUserByFilter:getSystemUserByFilter,
+        getContactById: getContactById,
+        getContactByIdSync: getContactByIdSync,
         createAppointmentWithAttendees: createAppointmentWithAttendees,
         createContactAsAttendees: createContactAsAttendees,
         createSetOfContacts: createSetOfContacts,
         createContactRecord: createContactRecord,
+        createAccount: createAccount,
         deleteContactsByFilter: deleteContactsByFilter,
+        deleteContactById: deleteContactById,
         deleteAccountsByFilter: deleteAccountsByFilter,
-        onFetchError: onFetchError,
+        deleteAppointmentById: deleteAppointmentById,
+        // onFetchError: onFetchError,
         onRestError: onRestError,
     };
 }());

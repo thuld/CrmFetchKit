@@ -23,7 +23,8 @@ gulp.task('lint', function(){
         './src/**/*.js',
         './test/spec/*.js',
         './test/helpers/*.js',
-        '!./test/helpers/*.min.js'];
+        '!./**/*.min.js',
+        '!./**/*.bundle.js'];
 
     return gulp.src( sourcefiles )
         .pipe(jshint('.jshintrc'))

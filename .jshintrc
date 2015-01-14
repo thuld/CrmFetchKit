@@ -14,7 +14,6 @@
     "forin": true,
     "devel": true,
     "globals": {
-        "CrmFetchKit": false,
-        "CrmRestKit": false
+        "CrmFetchKit": false
     }
 }

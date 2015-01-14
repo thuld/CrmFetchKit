@@ -26,9 +26,10 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "1.11.2"
+
   },
   "devDependencies": {
+    "jquery": "1.11.2",
     "chai": "~1.10.0",
     "mocha": "~2.1.0",
     "underscore": "~1.7.0"

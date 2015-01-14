@@ -1,7 +1,9 @@
 var soapXml = require('./util/soapXmlMessages');
-var soapParser  = require('./util/soapXmlParser');
+var soapParser = require('./util/soapXmlParser');
+var xrmHttpUtil = require('./util/xrmHttpRequestUtil');
+var BluePromise = require('bluebird');
 
-/*global Xrm, $, GetGlobalContext */
+/*global Xrm, GetGlobalContext */
 (function (window, document, undefined) {
     'use strict';
 
@@ -83,54 +85,14 @@ var soapParser  = require('./util/soapXmlParser');
 
         // default is true
         var async = (opt_async === false)? false: true,
-            url = getServerUrl() + SOAP_ENDPOINT,
-            req = new XMLHttpRequest(),
-            // result could be a promise of the ajax response
-            result = null,
-            dfd = null;
+            url = getServerUrl() + SOAP_ENDPOINT;
 
-        req.open("Post", url, async);
-
-        req.setRequestHeader("Accept", "application/xml, text/xml, */*");
-        req.setRequestHeader("Content-Type", "text/xml; charset=utf-8");
-        req.setRequestHeader("SOAPAction",
-            "http://schemas.microsoft.com/xrm/2011/Contracts/Services/IOrganizationService/Execute");
-
-        if (async) {
-
-            dfd = new $.Deferred();
-            result = dfd.promise();
-
-            req.onreadystatechange = function () {
-                // completed
-                if (req.readyState === 4) {
-
-                    if(req.status === 200) {
-                        dfd.resolve(req.responseXML);
-                    }
-                    else {
-                        dfd.reject( soapParser.getSoapError(req.responseXML) );
-                    }
-                }
-            };
-
-            req.send(xml);
+        if(async){
+            return xrmHttpUtil.xrmHttpPostRequestAsync(url, xml);
         }
         else {
-
-            req.send(xml);
-
-            if(req.status === 200) {
-                result = req.responseXML;
-            }
-            else {
-
-                var msg = 'CRM SERVER ERROR: ' + soapParser.getSoapError(req.responseXML);
-                throw new Error(msg);
-            }
+            return xrmHttpUtil.xrmHttpPostRequestSync(url, xml);
         }
-
-        return result;
     }
 
     ///
@@ -183,43 +145,31 @@ var soapParser  = require('./util/soapXmlParser');
     ///
     function fetchAll(fetchxml, opt_page) {
 
-        // defered object - promise for the "all" operation.
-        var dfd = $.Deferred(),
-            allRecords = [],
-            pageNumber = opt_page || 1,
-            pagingFetchxml = null;
+        var allRecords = [],
+            pageNumber = opt_page || 1;
 
-        // execute the fetch an receive the details (paging-cookie..)
-        fetchMore(fetchxml, true).then(function (result) {
+        return fetchMore(fetchxml).then(function(result){
+
+            var pagingFetchxml;
 
             // add the elements to the collection
             allRecords = allRecords.concat(result.entities);
 
-            if (result.moreRecords) {
-
-                // increase the page-number
+            if(!result.moreRecords){
+                // all records are loaded
+                return allRecords;
+            }
+            else {
+                // more to load - increase the page-number
                 pageNumber++;
 
                 // add page-number & paging-cookie
                 pagingFetchxml = soapParser.setPagingDetails(fetchxml, pageNumber, result.pagingCookie);
 
                 // recursive call
-                fetchAll(pagingFetchxml, pageNumber).then(function (collection) {
-
-                    // add the items to the collection
-                    allRecords = allRecords.concat(collection);
-
-                    dfd.resolve(allRecords);
-
-                }, dfd.reject);
+                return fetchAll(pagingFetchxml, pageNumber);
             }
-            else {
-                // in case less then 50 records are included in the resul-set
-                dfd.resolve(allRecords);
-            }
-        }, dfd.reject);
-
-        return dfd.promise();
+        });
     }
 
     ///

@@ -41,7 +41,7 @@
     "vinyl-source-stream": "^1.0.0"
   },
   "dependencies": {
-    "install": "^0.1.8",
+    "bluebird": "^2.6.4",
     "npm": "^2.1.18",
     "xml-escape": "^1.0.0"
   },
