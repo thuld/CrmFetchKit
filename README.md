@@ -290,21 +290,24 @@ gulp test
 Part of build task is the file "SpecRunner.html" generated. This HTML file contains all dependencies (e.g. `mocha.js`, `chai.js`, `CrmFetchKit.bundle.js`...) so the you need only to deploy this single HTML file as web-resource your environment.
 #Versions
 ##Version 3.x
-Uses [browserify](http://browserify.org/) for the dependency management.
-
-The jQuery dependency will be removed. The version 3.x will use [bluebird](https://github.com/petkaantonov/bluebird) as Promise library.
-
-Due to the use of bluebird instead of jQuery, some method are no longer available by the returned promise:
+This version replaced [jQuery](http://jquery.com/) dependency with [bluebird](https://github.com/petkaantonov/bluebird). Due to the use of bluebird instead of jQuery, some method are no longer available by the returned promise:
 - `always` instead use `finally`
 - `fail` instead use `catch`
 
-*Note:* Unfortunately depends "CrmRestKit.js" (use for the integration-tests) still jQuery. Therefor is it not possible to remove the jQuery dependency for now.
+###Breaking Changes
+The optional `async` for `Fetch`, `FetchMore` and `Assign` is no longer supported. All methods are now  async. That means that `CrmFetchKit.Fetch(xml, false)` will **not** perform a synchronous operation. To execute a sync operation use one of the `*Sync` methods (e.g. `FetchSync`, `FetchMoreSync`).
+
+Furthermore supports the library now the methods `GetById` and `GetByIdSync`.
+
+**Note:** Unfortunately depends `CrmRestKit.js` (use for the integration-tests) still jQuery. Therefor is it not possible to remove the jQuery dependency for now.
+
+Internally uses CrmFetchKit now [browserify](http://browserify.org/) for the dependency management.
 
 ##Version 2.x
 The version 2.x of the library uses [Mocha.js](http://mochajs.org/) as testing framework (instead of [QUnit](http://qunitjs.com/)) and [Gulp.js](http://gulpjs.com/) for the task automation (linting, build, minify, etc.)
 
-###Breaking Changes from version 1.x
-- Before this version the `getValue` method returns an `string` for option-sets attributes. With the 2.x version, the method return a value of type `number`. See integration test `should retrieve the optionset-value as "number"`
+###Breaking Changes
+- Before this version the `getValue` method returns an `string` for `option-sets` attributes. With the 2.x version, the method return a value of type `number`. See integration test `should retrieve the optionset-value as "number"`
 - The "Assign" accepts now five attributes (`id`, `entityname`, `assigneeId`, `assigneeEntityName`, `opt_async`).
 
 ##Versions 1.x
