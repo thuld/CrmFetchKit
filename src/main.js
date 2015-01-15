@@ -1,90 +1,19 @@
 var soapXml = require('./util/soapXmlMessages');
 var soapParser = require('./util/soapXmlParser');
 var xrmHttpUtil = require('./util/xrmHttpRequestUtil');
+var clientUtil = require('./util/xrmClientUtil');
 
-/*global Xrm, GetGlobalContext */
 (function (window, document, undefined) {
     'use strict';
 
-    ///
-    /// Private member
-    ///
-    var SOAP_ENDPOINT = '/XRMServices/2011/Organization.svc/web',
-        // cache for the context
-        GLOBAL_CONTEXT = null,
-        // cache for the server-url
-        SERVER_URL = null;
-
-    ///
-    /// Private function to the context object.
-    ///
-    function getContext() {
-
-        if (GLOBAL_CONTEXT === null) {
-
-            if (typeof GetGlobalContext !== "undefined") {
-
-                /* jshint ignore:start */
-                GLOBAL_CONTEXT = GetGlobalContext();
-                /* jshint ignore:end */
-            }
-            else {
-
-                if (typeof Xrm !== "undefined") {
-                    GLOBAL_CONTEXT = Xrm.Page.context;
-                }
-                else {
-                    throw new Error("Context is not available.");
-                }
-            }
-        }
-
-        return GLOBAL_CONTEXT;
-    }
-
-    ///
-    /// Private function to return the server URL from the context
-    ///
-    function getServerUrl() {
-
-        var winLocation = window.location;
-
-        if (SERVER_URL === null) {
-
-            var url = null,
-                localServerUrl = winLocation + "//" + winLocation,
-                context = getContext();
-
-            if ( Xrm.Page.context.getClientUrl !== undefined ) {
-                // since version SDK 5.0.13
-                // http://www.magnetismsolutions.com/blog/gayan-pereras-blog/2013/01/07/crm-2011-polaris-new-xrm.page-method
-
-                url = Xrm.Page.context.getClientUrl();
-            }
-            else if ( context.isOutlookClient() && !context.isOutlookOnline() ) {
-                url = localServerUrl;
-            }
-            else {
-                url = context.getServerUrl();
-                url = url.replace( /^(http|https):\/\/([_a-zA-Z0-9\-\.]+)(:([0-9]{1,5}))?/, localServerUrl );
-                url = url.replace( /\/$/, "" );
-            }
-
-            SERVER_URL = url;
-
-        }
-
-        return SERVER_URL;
-    }
-
-    ///
-    /// Performs the Ajax request
-    ///
+    // performs the post-http request against the soap endpoint
+    // based on the optional parameter 'opt_async' perform the method a
+    // synchronous or asynchronous operation
     function executeRequest(xml, opt_async) {
 
-        // default is true
+        // default is 'true'
         var async = (opt_async === false)? false: true,
-            url = getServerUrl() + SOAP_ENDPOINT;
+            url = clientUtil.getSoapEndpointUrl();
 
         if(async){
             return xrmHttpUtil.xrmHttpPostRequestAsync(url, xml);
@@ -94,29 +23,27 @@ var xrmHttpUtil = require('./util/xrmHttpRequestUtil');
         }
     }
 
-    ///
-    /// Assigns the reocrd to an user or team in async-mode
-    ///
-    function assignSync(id, entityname, assigneeId, assigneeEntityName) {
+    // assigns synchronously a CRM reocrd to an user or team
+    function assignSync(targetId, targetEntity, assigneeId, assigneeEntity) {
 
-        var xml = soapXml.getAssignXml(id, entityname, assigneeId, assigneeEntityName);
+        var xml = soapXml.getAssignXml(targetId, targetEntity,
+            assigneeId, assigneeEntity);
 
         return executeRequest(xml, false);
     }
 
-    ///
-    /// Assigns the reocrd to an user or team in async-mode
-    ///
-    function assign(id, entityname, assigneeId, assigneeEntityName) {
+    // assigns asynchronously a CRM record (target) to an user or team
+    // and returns a promise
+    function assign(targetId, targetEntity, assigneeId, assigneeEntity) {
 
-        var xml = soapXml.getAssignXml(id, entityname, assigneeId, assigneeEntityName);
+        var xml = soapXml.getAssignXml(targetId, targetEntity,
+            assigneeId, assigneeEntity);
 
         return executeRequest(xml, true);
     }
 
-    ///
-    /// Executes a fetchxml-request and enables paging in async-mode
-    ///
+    // executes synchronously an fetchxml-request and returns, beside
+    // of the records some meta data (e.g. total-record-count)
     function fetchMoreSync(fetchxml) {
 
         var requestXml = soapXml.getFetchMoreXml(fetchxml),
@@ -125,9 +52,8 @@ var xrmHttpUtil = require('./util/xrmHttpRequestUtil');
         return soapParser.getFetchResult( response );
     }
 
-    ///
-    /// Executes a fetchxml-request and enables paging in async-mode
-    ///
+    // executes asynchronously an fetchxml-request and returns, beside
+    // of the records some meta data (e.g. total-record-count) as promise
     function fetchMore(fetchxml) {
 
         var request = soapXml.getFetchMoreXml(fetchxml);
@@ -138,17 +64,14 @@ var xrmHttpUtil = require('./util/xrmHttpRequestUtil');
             });
     }
 
-    ///
-    /// Aync-only: Loads all records (recursive with paging cookie)
-    ///
+    // loads all records (recursive with paging cookie) and returns promise
     function fetchAll(fetchxml, opt_page) {
 
         var allRecords = [],
             pageNumber = opt_page || 1;
 
         return fetchMore(fetchxml).then(function(result){
-
-            var pagingFetchxml;
+            var pagingFetchXml;
 
             // add the elements to the collection
             allRecords = allRecords.concat(result.entities);
@@ -162,17 +85,16 @@ var xrmHttpUtil = require('./util/xrmHttpRequestUtil');
                 pageNumber++;
 
                 // add page-number & paging-cookie
-                pagingFetchxml = soapParser.setPagingDetails(fetchxml, pageNumber, result.pagingCookie);
+                pagingFetchXml = soapParser.setPagingDetails(
+                                    fetchxml, pageNumber, result.pagingCookie);
 
-                // recursive call
-                return fetchAll(pagingFetchxml, pageNumber);
+                // recursive call (returns another promise)
+                return fetchAll(pagingFetchXml, pageNumber);
             }
         });
     }
 
-    ///
-    /// Executes a fetch-request an returns a promies object in sync-mode
-    ///
+    // executes a fetch-request an returns a promies object in sync-mode
     function fetchSync(fetchxml) {
 
         var result = fetchMoreSync(fetchxml);
@@ -180,9 +102,7 @@ var xrmHttpUtil = require('./util/xrmHttpRequestUtil');
         return result.entities;
     }
 
-    ///
-    /// Executes a fetch-request an returns a promies object in async-mode
-    ///
+    // performs a asynchronous fetch-request and returns a promies
     function fetch(fetchxml) {
 
         return fetchMore(fetchxml).then(function (result) {

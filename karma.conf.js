@@ -19,8 +19,8 @@ module.exports = function(config) {
     files: [
       './test/spec/CrmFetchKitSpec.js',
       './test/spec/soapParserSpec.bundle.js',
-      './build/CrmFetchKit.bundle.js'
-      //'./src/CrmFetchKit.min.js'
+      './build/CrmFetchKit.bundle.js',
+      './test/spec/xrmClientUtilSpec.bundle.js'
     ],
 
 

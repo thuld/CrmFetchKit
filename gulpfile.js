@@ -10,6 +10,7 @@ var karma = require('karma').server;
 var header = require('gulp-header');
 var source = require('vinyl-source-stream');
 var browserify = require('browserify');
+var transform = require('vinyl-transform');
 
 var pkg = require('./package.json');
 
@@ -19,7 +20,7 @@ var banner = [
     '// <%= homepage %>',
     '// <%= author %> \n',
     ].join('\n');
-    
+
 ///
 /// static code analysis
 ///
@@ -45,7 +46,7 @@ gulp.task('compress', ['browserify'], function() {
     return gulp.src('build/CrmFetchKit.bundle.js')
         .pipe(uglify())
         .pipe(rename({suffix: '.min'}))
-        .pipe( header(banner, pkg))
+        .pipe(header(banner, pkg))
         .pipe(gulp.dest('./build') );
 });
 
@@ -69,16 +70,25 @@ gulp.task('browserify', function() {
     return browserify('./src/main.js')
         .bundle()
         .pipe(source('CrmFetchKit.bundle.js'))
-        .pipe( header(banner, pkg))
+        .pipe(header(banner, pkg))
         .pipe(gulp.dest('./build/'));
 });
 
-// using vinyl-source-strea to browserify the module
+// using vinyl-transform to browserify the module
 gulp.task('browserify-specs', function() {
 
-    return browserify('./test/spec/soapParserSpec.js')
-        .bundle()
-        .pipe(source('soapParserSpec.bundle.js'))
+    var files = [
+        './test/spec/soapParserSpec.js',
+        './test/spec/xrmClientUtilSpec.js' ];
+
+    var browserified = transform(function(filename) {
+        var b = browserify(filename);
+        return b.bundle();
+    });
+
+    return gulp.src(files)
+        .pipe(browserified)
+        .pipe(rename({suffix: '.bundle'}))
         .pipe(gulp.dest('./test/spec/'));
 });
 

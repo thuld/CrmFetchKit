@@ -307,8 +307,9 @@ Internally uses CrmFetchKit now [browserify](http://browserify.org/) for the dep
 The version 2.x of the library uses [Mocha.js](http://mochajs.org/) as testing framework (instead of [QUnit](http://qunitjs.com/)) and [Gulp.js](http://gulpjs.com/) for the task automation (linting, build, minify, etc.)
 
 ###Breaking Changes
-- Before this version the `getValue` method returns an `string` for `option-sets` attributes. With the 2.x version, the method return a value of type `number`. See integration test `should retrieve the optionset-value as "number"`
-- The "Assign" accepts now five attributes (`id`, `entityname`, `assigneeId`, `assigneeEntityName`, `opt_async`).
+- Before this version the `getValue` method returns an `string` for `option-sets` attributes. With the 2.x version, the method return a value of type `number`.
+	- See integration test `should retrieve the optionset-value as "number"`
+- The `Assign` method accepts now five attributes (`id`, `entityname`, `assigneeId`, `assigneeEntityName`, `opt_async`).
 
 ##Versions 1.x
 Previous versions (1.x) of this library are available on CodePlex (http://crmfetchkit.codeplex.com/)

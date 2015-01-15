@@ -1,3 +1,4 @@
 node_modules
 bower_components
 test/spec/soapParserSpec.bundle.js
+test/spec/xrmClientUtilSpec.bundle.js
