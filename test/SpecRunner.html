@@ -16843,10 +16843,10 @@ module.exports = (function() {
 
 	// converts the response to a result-object that contains the
 	// entities, pagaingcookie...
-	function getFetchResult(data) {
+	function getFetchResult(responseXmlObject) {
 
 		// "s:Envelope/s:Body/ExecuteResponse/ExecuteResult"
-		var executeResult = data.firstChild.firstChild.firstChild.firstChild,
+		var executeResult = responseXmlObject.firstChild.firstChild.firstChild.firstChild,
 			resultsNode = getChildNode(executeResult, 'a:Results'),
 			entityCollectionNode = getChildNode(resultsNode.firstChild, 'b:value');
 

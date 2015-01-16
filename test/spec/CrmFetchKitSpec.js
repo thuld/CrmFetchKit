@@ -1,6 +1,10 @@
 /*globals describe, chai, it, BusinessEntity*/
 
-describe('CrmFetchKit', function(){
+// do not assign the require to a varialbe!
+// the main module poplates the window object but does not return a value
+require('../../src/main.js');
+
+describe('Specification - CrmFetchKit', function(){
     'use strict';
 
     var expect = chai.expect;

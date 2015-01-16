@@ -12,29 +12,29 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
+    //frameworks: ['browserify', 'mocha', 'chai'],
     frameworks: ['mocha', 'chai'],
 
 
     // list of files / patterns to load in the browser
     files: [
-      './test/spec/CrmFetchKitSpec.js',
-      './test/spec/soapParserSpec.bundle.js',
-      './build/CrmFetchKit.bundle.js',
-      './test/spec/xrmClientUtilSpec.bundle.js'
+        './test/spec/*.bundle.js'
+        //'./build/CrmFetchKit.bundle.js',
+        //'./test/spec/CrmFetchKitSpec.js',
+        //'./test/spec/soapParserSpec.js',
+        //'./test/spec/xrmClientUtilSpec.js'
     ],
 
 
     // list of files to exclude
     exclude: [
-      './test/spec/integrationSpec.js',
-      './test/spec/soapParserSpec.js'
+      './test/spec/integrationSpec.js'
     ],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-    },
+    preprocessors: { },
 
 
     // test results reporter to use

@@ -61,8 +61,8 @@ gulp.task('build-specrunner', function() {
 gulp.task('browserify-specs', function() {
 
     var files = [
-        './test/spec/soapParserSpec.js',
-        './test/spec/xrmClientUtilSpec.js' ];
+        './test/spec/*Spec.js',
+        '!./test/spec/integrationSpec.js' ];
 
     var browserified = transform(function(filename) {
         var b = browserify(filename);
@@ -84,6 +84,7 @@ gulp.task('browserify', function(){
         .pipe(header(banner, pkg))
         .pipe(gulp.dest('./build/'));
 });
+
 /// before starting the build, the compress task must be completed
 gulp.task('build', ['compress', 'browserify-specs'], function(){
 
@@ -110,5 +111,5 @@ gulp.task('watch', function() {
  
     // adds a watch that executes the tasks
     // everytime a source-file is modified
-    return gulp.watch(files, ['lint', 'compress']);
+    return gulp.watch(files, ['lint', 'build']);
 });

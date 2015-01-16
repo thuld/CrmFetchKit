@@ -2,7 +2,7 @@
 
 var xrmclient = require('../../src/util/xrmClientUtil');
 
-describe("The module 'xrmClientUtil'", function(){
+describe('Specification - xrmClientUtil', function(){
     'use strict';
 
     var expect = chai.expect,
