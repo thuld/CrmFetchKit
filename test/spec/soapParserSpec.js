@@ -100,7 +100,8 @@ describe("Specification - soapXmlParser", function(){
 
     describe('method "getFetchResult"', function (){
 
-        var parser = new DOMParser(),
+        var userid = 'bf507d0c-093a-e411-bfe4-2c59e54216bc',
+            parser = new DOMParser(),
             responseXml;
 
         beforeEach(function(){
@@ -135,7 +136,7 @@ describe("Specification - soapXmlParser", function(){
             "                                        <a:KeyValuePairOfstringanyType>",
             "                                            <b:key>createdby</b:key>",
             "                                            <b:value i:type=\"a:EntityReference\">",
-            "                                                <a:Id>bf507d0c-093a-e411-bfe4-2c59e54216bc</a:Id>",
+            "                                                <a:Id>" +userid+ "</a:Id>",
             "                                                <a:LogicalName>systemuser</a:LogicalName>",
             "                                                <a:Name>Daniel Rene Thul</a:Name>",
             "                                            </b:value>",
@@ -214,6 +215,169 @@ describe("Specification - soapXmlParser", function(){
 
                 // assert
                 expect(result.entities[0]).to.be.an.instanceof(BusinessEntity);
+        });
+
+        it('should parse the id of the lookup-value record', function() {
+
+            // arrange - convert string to XML Object
+            var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+            // action
+            var result = soapParser.getFetchResult(responseXmlObj);
+
+            // assert - "createBy" is a lookup to the "SystemUser" entity
+            expect(result.entities[0].getValue('createdby')).to.equal(userid);
+        });
+
+        it('should parse the entity-technicalname of the lookup-value record', function() {
+
+            // arrange - convert string to XML Object
+            var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+            // action
+            var result = soapParser.getFetchResult(responseXmlObj);
+
+            // assert - "createBy" is a lookup to the "SystemUser" entity
+            expect(result.entities[0].getValue('createdby', 'logicalName')).to.equal('systemuser');
+        });
+
+        it('should parse the primary attr. of the referenced record', function() {
+
+            // arrange - convert string to XML Object
+            var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+            // action
+            var result = soapParser.getFetchResult(responseXmlObj);
+
+            // assert - "createBy" is a lookup to the "SystemUser" entity
+            expect(result.entities[0].getValue('createdby', 'name')).to.exist();
+        });
+
+        it('should pasre the for an empty optionset-value "NULL" not "NaN"', function() {
+
+            // arrange - convert string to XML Object
+            var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+            // action
+            var result = soapParser.getFetchResult(responseXmlObj);
+
+            // assert - the category-code is of type "number"
+            expect(result.entities[0].getValue('industrycode')).to.equal(null);
+        });
+
+        describe('data-type parsing', function(){
+
+            it('should parse the "createdon" as date', function() {
+
+                // arrange - convert string to XML Object
+                var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+                // action
+                var result = soapParser.getFetchResult(responseXmlObj);
+
+                // assert - "createOn" of type "Date"
+                expect(result.entities[0].getValue('createdon')).to.a('Date');
+            });
+
+            it('should parse the boolen attributes as boolean', function() {
+
+                // arrange - convert string to XML Object
+                var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+                // action
+                var result = soapParser.getFetchResult(responseXmlObj);
+
+                var account = result.entities[0];
+
+                // assert - "donotmail"
+                expect(account.getValue('donotemail')).to.be.a('boolean');
+                expect(account.getValue('donotemail')).to.be.equal(false);
+
+                // assert - "donotfax"
+                expect(account.getValue('donotfax')).to.be.a('boolean');
+                expect(account.getValue('donotfax')).to.be.equal(true);
+            });
+
+            it('should parse the "category-code" (optionset) of the account', function() {
+
+                // arrange - convert string to XML Object
+                var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+                // action
+                var result = soapParser.getFetchResult(responseXmlObj);
+
+                // assert - the category-code is populated
+                expect(result.entities[0].getValue('accountcategorycode')).to.be.equal(1);
+            });
+
+            it('should parse the optionset-value as "number"', function() {
+
+                // arrange - convert string to XML Object
+                var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+                // action
+                var result = soapParser.getFetchResult(responseXmlObj);
+
+                // assert the category-code is of type "number"
+                expect(result.entities[0].getValue('accountcategorycode')).to.be.a('number');
+            });
+        });
+
+        describe('relevant information for the "FetchMore" method', function(){
+
+            it('should parse the "moreRecords" information', function() {
+
+                // arrange - convert string to XML Object
+                var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+                // action
+                var result = soapParser.getFetchResult(responseXmlObj);
+
+                // assert - moreRecords is true
+                expect(result).to.have.property('moreRecords');
+                expect(result.moreRecords).to.be.a('boolean');
+                expect(result.moreRecords).to.be.equal(false);
+
+            });
+
+            it('should parse the "entityName" information', function() {
+
+                // arrange - convert string to XML Object
+                var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+                // action
+                var result = soapParser.getFetchResult(responseXmlObj);
+
+                // assert - moreRecords is true
+                expect(result).to.have.property('entityName');
+                expect(result.entityName).to.be.a('string');
+                expect(result.entityName).to.be.equal('account');
+            });
+
+            it('should parse the "totalRecordcount" information', function() {
+
+                // arrange - convert string to XML Object
+                var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+                // action
+                var result = soapParser.getFetchResult(responseXmlObj);
+
+                // assert
+                expect(result.totalRecordCount).to.exist();
+
+            });
+
+            it('should parse the "totalRecordcount" information as number', function() {
+
+                // arrange - convert string to XML Object
+                var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+                // action
+                var result = soapParser.getFetchResult(responseXmlObj);
+
+                // assert
+                expect(result.totalRecordCount).to.be.a('number');
+            });
         });
     });
 
