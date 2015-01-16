@@ -48,4 +48,50 @@ describe("The module 'soapParser'", function(){
 
         expect(injectedPageNr).to.equal(fakePageNr);
     });
+
+    it('should extract the server-error message', function(){
+
+        // arrange - http-response with error
+        var responseXmlObj,
+            errorMsg,
+            faultString = "'Account' entity doesn't contain attribute with Name = 'THIS_ATTR_DOES_NOT_EXIST'.",
+            parser = new DOMParser(),
+            responseXml = [
+                "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">",
+                "    <s:Body>",
+                "        <s:Fault>",
+                "            <faultcode>s:Client</faultcode>",
+                "            <faultstring xml:lang=\"en-US\">"+faultString+"</faultstring>",
+                "            <detail>",
+                "                <OrganizationServiceFault xmlns=\"http://schemas.microsoft.com/xrm/2011/Contracts\" xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">",
+                "                    <ErrorCode>-2147217149</ErrorCode>",
+                "                    <ErrorDetails xmlns:a=\"http://schemas.datacontract.org/2004/07/System.Collections.Generic\" />",
+                "                    <Message>"+faultString+"</Message>",
+                "                    <Timestamp>2015-01-16T06:51:11.9541094Z</Timestamp>",
+                "                    <InnerFault>",
+                "                        <ErrorCode>-2147217149</ErrorCode>",
+                "                        <ErrorDetails xmlns:a=\"http://schemas.datacontract.org/2004/07/System.Collections.Generic\" />",
+                "                        <Message>"+faultString+"</Message>",
+                "                        <Timestamp>2015-01-16T06:51:11.9541094Z</Timestamp>",
+                "                        <InnerFault i:nil=\"true\" />",
+                "                        <TraceText i:nil=\"true\" />",
+                "                    </InnerFault>",
+                "                    <TraceText i:nil=\"true\" />",
+                "                </OrganizationServiceFault>",
+                "            </detail>",
+                "        </s:Fault>",
+                "    </s:Body>",
+                "</s:Envelope>"];
+
+        // arrange - remove whitespaces
+        responseXml = responseXml.map(String.prototype.trim).join("");
+        // arrange - convert string to XML Object
+        responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+        // action
+        errorMsg = soapParser.getSoapError(responseXmlObj);
+
+        // assert
+        expect(errorMsg).to.equal(faultString);
+    });
 });
