@@ -57,7 +57,7 @@ gulp.task('build-specrunner', function() {
         .pipe(gulp.dest('./test'));
 });
 
-// using vinyl-transform to browserify the module
+// using vinyl-transform to browserify the specification modules
 gulp.task('browserify-specs', function() {
 
     var files = [

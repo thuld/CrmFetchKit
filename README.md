@@ -1,7 +1,8 @@
 #Introduction
 Browser library that allows the execution of fetchxml-queries via JavaScript for Dynamics CRM using SOAP endpoint.
 
-Just like the [CrmRestKit.js](http://crmrestkit.codeplex.com/) this framework uses the [promise](http://blogs.telerik.com/kendoui/posts/13-03-28/what-is-the-point-of-promises) capacities of jQuery to manage the complexity of asynchronous operation.
+Like the [CrmRestKit.js](http://crmrestkit.codeplex.com/) depdends this framework on the [promise](http://blogs.telerik.com/kendoui/posts/13-03-28/what-is-the-point-of-promises) concept, but it uses [bluebird](https://github.com/petkaantonov/bluebird) instead of jQuery to manage the complexity of asynchronous operation.
+
 The code and the idea for this framework bases on the [CrmServiceToolkit](http://crmtoolkit.codeplex.com) developed by Daniel Cai.
 
 #Topics

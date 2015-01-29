@@ -17976,6 +17976,19 @@ describe('CrmFetchKit API', function() {
                 .then(done);
         });
 
+        describe("This integration tests required some existing data", function(){
+
+            it('exists a team with name "Integration-Test-Team"', function(){
+
+                expect(teamid).to.be.not.null();
+            });
+
+            it('exists a user with lastname "kayir"', function(){
+
+                    expect(userid).to.be.not.null();
+            });
+        });
+
         describe("supports the async execution via 'Assign'", function(){
 
             it('should change the owner of the record to a team', function(done) {
