@@ -24,7 +24,7 @@ The code and the idea for this framework bases on the [CrmServiceToolkit](http:/
 
 #Support
 ##Version 3.x
-The version 3.x supports Chrome, Firefox and IE9+ and was tested with **Dynamics CRM 2013 Online**.
+The version 3.x supports Chrome, Firefox and IE9+ and was tested with Dynamics CRM 2013 Online and **Dynamics CRM 2015 Online**.
 
 ##Version 2.x
 The version 2.x supports Chrome, Firefox and IE8+ and was tested with **Dynamics CRM 2013 Online**.
