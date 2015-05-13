@@ -65,9 +65,9 @@ var clientUtil = require('./util/xrmClientUtil');
     }
 
     // loads all records (recursive with paging cookie) and returns promise
-    function fetchAll(fetchxml, opt_page) {
+    function fetchAll(fetchxml, opt_page, opt_allRecords) {
 
-        var allRecords = [],
+        var allRecords = opt_allRecords || [],
             pageNumber = opt_page || 1;
 
         return fetchMore(fetchxml).then(function(result){
@@ -89,7 +89,7 @@ var clientUtil = require('./util/xrmClientUtil');
                                     fetchxml, pageNumber, result.pagingCookie);
 
                 // recursive call (returns another promise)
-                return fetchAll(pagingFetchXml, pageNumber);
+                return fetchAll(pagingFetchXml, pageNumber, allRecords);
             }
         });
     }

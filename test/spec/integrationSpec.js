@@ -1,4 +1,4 @@
-/*globals describe, it, chai, before, after, Xrm, _, specUtil*/
+/*globals describe, it, chai, before, after, Xrm, _, specUtil, Promise*/
 
 'use strict';
 describe('CrmFetchKit API', function() {
@@ -118,7 +118,9 @@ describe('CrmFetchKit API', function() {
                     // assert
                     expect(account).to.exist();
 
-                }).finally(done);
+                })
+                .then(done)
+                .catch(done);
         });
 
         it('should yield an single account record when using the sync counterpart', function() {
@@ -375,7 +377,8 @@ describe('CrmFetchKit API', function() {
                         expect(id).to.exist();
                         expect(id).to.equal(accountId);
                     })
-                    .finally(done);
+                    .then(done)
+                    .catch(done);
             });
 
             it('should yield the "name" of the account', function(done) {
@@ -688,7 +691,8 @@ describe('CrmFetchKit API', function() {
                         // assert - the EntityCollection attr. is parsed
                         expect(attendees.entities[0].getValue('partyid')).to.exist();
                     })
-                    .finally(done);
+                    .then(done)
+                    .catch(done);
             });
         });
     });
@@ -751,7 +755,8 @@ describe('CrmFetchKit API', function() {
                     // assert
                     expect(codeAfterQueryIsReached).to.be.equal(true);
                 })
-                .finally(done);
+                .then(done)
+                .catch(done);
 
             codeAfterQueryIsReached = true;
         });
@@ -773,7 +778,8 @@ describe('CrmFetchKit API', function() {
                     // assert
                     expect(response.totalRecordCount).to.exist();
                 })
-                .finally(done);
+                .then(done)
+                .catch(done);
         });
 
         it('should provide the "totalRecordcount" information as number', function(done) {
@@ -785,7 +791,8 @@ describe('CrmFetchKit API', function() {
                 // assert
                 expect(response.totalRecordCount).to.be.a('number');
             })
-            .finally(done);
+            .then(done)
+            .catch(done);
         });
 
         it('should provide the "moreRecords" information', function(done) {
@@ -798,7 +805,8 @@ describe('CrmFetchKit API', function() {
                     expect(response.moreRecords).to.be.a('boolean');
                     expect(response.moreRecords).to.be.equal(true);
                 })
-                .finally(done);
+                .then(done)
+                .catch(done);
         });
 
         it('should provide the "entityName" information', function(done) {
@@ -811,7 +819,8 @@ describe('CrmFetchKit API', function() {
                     expect(response.entityName).to.be.a('string');
                     expect(response.entityName).to.be.equal('contact');
                 })
-                .finally(done);
+                .then(done)
+                .catch(done);
         });
 
         it('should provide the loaded records in the "entities" property', function(done) {
@@ -824,7 +833,8 @@ describe('CrmFetchKit API', function() {
                     expect(response.entities).to.be.a('array');
                     expect(response.entities.length).to.be.equal(countLimit);
                 })
-                .finally(done);
+                .then(done)
+                .catch(done);
         });
 
         it('should provide the "pagingCookie" information', function(done) {
@@ -836,13 +846,14 @@ describe('CrmFetchKit API', function() {
                     expect(response).to.have.property('pagingCookie');
                     expect(response.pagingCookie).to.be.a('string');
                 })
-                .finally(done);
+                .then(done)
+                .catch(done);
         });
     });
 
     describe('FetchAll', function() {
 
-        var numnberOfContacts = 6,
+        var numnberOfContacts = 7,
             lastName = 'foobar - fetchall',
             queryCountLimit = 2,
             fetchxml = [
@@ -894,7 +905,8 @@ describe('CrmFetchKit API', function() {
                     // assert
                     expect(codeAfterQueryIsReached).to.equal(true);
                 })
-                .finally(done);
+                .then(done)
+                .catch(done);
 
             codeAfterQueryIsReached = true;
         });
@@ -908,7 +920,8 @@ describe('CrmFetchKit API', function() {
                     // assert
                     expect(entities.length).to.equal(numnberOfContacts);
                 })
-                .finally(done);
+                .then(done)
+                .catch(done);
         });
     });
 
@@ -941,7 +954,8 @@ describe('CrmFetchKit API', function() {
                 teamid = result.teamEntities[0].TeamId;
                 userid = result.userEntities[0].SystemUserId;
             })
-            .finally(done);
+            .then(done)
+            .catch(done);
         });
 
         // teardown
@@ -957,13 +971,11 @@ describe('CrmFetchKit API', function() {
         describe("This integration tests required some existing data", function(){
 
             it('exists a team with name "Integration-Test-Team"', function(){
-
                 expect(teamid).to.be.not.null();
             });
 
             it('exists a user with lastname "kayir"', function(){
-
-                    expect(userid).to.be.not.null();
+                expect(userid).to.be.not.null();
             });
         });
 
@@ -981,7 +993,8 @@ describe('CrmFetchKit API', function() {
                         expect(contact.Owner.Id).to.equal(teamid);
                     });
                 })
-                .finally(done);
+                .then(done)
+                .catch(done);
             });
 
             it('should change the owner of the record to a another user', function(done) {
@@ -996,7 +1009,8 @@ describe('CrmFetchKit API', function() {
                         expect(contact.Owner.Id).to.equal(userid);
                     });
                 })
-                .finally(done);
+                .then(done)
+                .catch(done);
             });
         });
 
