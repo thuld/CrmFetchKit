@@ -68,6 +68,19 @@ var clientUtil = require('./util/xrmClientUtil');
             });
     }
 
+    // allows the loading of record only for certain pages (e.g. only page 1 and 2)
+    function fetchByPage(fetchxml, pageNumber, opt_pagingCookie) {
+        
+        if(pageNumber !== 1){
+            
+            // add page-number & paging-cookie
+            fetchxml = soapParser.setPagingDetails(
+                                 fetchxml, pageNumber, opt_pagingCookie);
+        }
+                
+        return fetchMore(fetchxml);
+    }
+
     // loads all records (recursive with paging cookie) and returns promise
     function fetchAll(fetchxml, opt_page, opt_allRecords) {
 
@@ -154,6 +167,7 @@ var clientUtil = require('./util/xrmClientUtil');
         FetchMore: fetchMore,
         FetchMoreSync: fetchMoreSync,
         FetchAll: fetchAll,
+        FetchByPage: fetchByPage,
         Assign: assign,
         AssignSync: assignSync
     };

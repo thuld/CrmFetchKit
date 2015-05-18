@@ -42,6 +42,10 @@ describe('Specification - CrmFetchKit', function(){
         it('should provide a "GetById" method', function(){
             expect(CrmFetchKit.GetById).to.exist();
         });
+        
+         it('should provide a "FetchByPage" method', function(){
+            expect(CrmFetchKit.FetchByPage).to.exist();
+        });
     });
 
     describe('By using "brwoserify" the global namespace should not be cluttered', function(){

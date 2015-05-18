@@ -15,6 +15,7 @@ The code and the idea for this framework bases on the [CrmServiceToolkit](http:/
 	- [`FetchMore`](#fetchmore)
 	- [`FetchMoreSync`](#fetchmoresync)
 	- [`FetchAll`](#fetchall)
+	- [`FetchByPage`](#fetchbypage)
 	- [`Assign`](#assign)
 	- [`AssignSync`](#assignsync)
 - [Installation](#installation)
@@ -187,6 +188,21 @@ CrmFetchKit.FetchAll(fetchxml).then(function(entities){
 });
 ````
 Internally uses `FetchAll` the `FetchMore` method and the provided `pagingCookie` to load the pages until all records are loaded.
+
+##FetchByPage
+This method allows the load of records per page-number. 
+````javascript
+// load records from the first page
+CrmFetchKit.FetchByPage(fetchxml, 1).then(function(responsePage1) {
+                            
+	// load records form the second page
+    return CrmFetchKit.FetchByPage(fetchxml, 2, responsePage1.pagingCookie)
+        .then(function(responsePage2){
+            
+            //...
+        });
+})
+````
 
 ##Assign
 The `Assign` method allows the modification of the owner of an CRM record.

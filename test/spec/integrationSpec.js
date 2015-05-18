@@ -36,6 +36,11 @@ describe('CrmFetchKit API', function() {
             // assert
             expect(CrmFetchKit).to.have.property('FetchAll');
         });
+        
+        it('should provided the public member "FetchByPage"', function() {
+            // assert
+            expect(CrmFetchKit).to.have.property('FetchByPage');
+        });
 
         it('should provided the public member "Assign"', function() {
             // assert
@@ -924,13 +929,80 @@ describe('CrmFetchKit API', function() {
                 .catch(done);
         });
     });
+    
+    describe('FetchByPage', function() {
+        
+        var numnberOfContacts = 7,
+            lastName = 'foobar - fetchbypage',
+            queryCountLimit = 2,
+            fetchxml = [
+                '<fetch version="1.0" count="' + queryCountLimit + '">',
+                '  <entity name="contact">',
+                '    <attribute name="lastname" />',
+                '    <attribute name="contactid" />',
+                '    <filter type="and">',
+                '      <condition attribute="lastname"',
+                '       operator="like" value="' + lastName + '" />',
+                '    </filter>',
+                '  </entity>',
+                '</fetch>'
+            ].join('');
+        
+         // setup
+        before(function(done) {
+
+            // increase the execution-time-limit for mocha.js
+            this.timeout(9000);
+
+            // create some contact records for the tests
+            specUtil
+                .createSetOfContacts(numnberOfContacts, lastName)
+                .then(function( /*notRelevantParameter*/ ) {
+                    done();
+                });
+        });
+        
+        // teardown
+        after(function(done) {
+            // increase the execution-time-limit for mocha.js
+            this.timeout(9000);
+
+            specUtil
+                .deleteContactsByFilter("LastName eq '" + lastName + "'")
+                .then(function( /*notRelevantParameter*/ ) {
+                    done();
+                });
+        });
+        
+        it('should only load the records from the two pages', function(done) {
+            this.timeout(8000);
+
+            // action - execute the query
+            CrmFetchKit.FetchByPage(fetchxml, 1).then(function(responsePage1) {
+                    
+                    
+                    return CrmFetchKit.FetchByPage(fetchxml, 2, responsePage1.pagingCookie)
+                        .then(function(responsePage2){
+                            
+                            var entitiesPage1Cnt = responsePage1.entities.length,
+                                entitiesPage2Cnt = responsePage2.entities.length;
+                            
+                            // assert
+                            expect( (entitiesPage2Cnt + entitiesPage1Cnt) ).to.equals(queryCountLimit * 2);
+                        });
+            })
+            .then(done)
+            .catch(done);
+        });
+     });
+
 
     describe("The 'Assign' operation", function() {
 
         // Note: This integration-test depends on an existing user and an team
         var contactid = null,
             contactlastname = 'foobar',
-            userlastname = 'kayir',
+            userlastname = 'muster',
             userid = null,
             teamname = 'Integration-Test-Team',
             teamid = null;
