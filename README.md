@@ -280,6 +280,13 @@ This module could be installed via [bower](http://bower.io/):
 ````
 bower install crmfetchkit
 ````
+
+##npm package
+This module could be installed via [npm](https://www.npmjs.com/package/crmfetchkit), the first version supporting npm is 3.2.0:
+````
+npm install crmfetchkit
+````
+
 ##Build
 To build the library from source-code the following components are required:
 - Node.js
