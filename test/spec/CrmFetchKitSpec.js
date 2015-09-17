@@ -42,10 +42,20 @@ describe('Specification - CrmFetchKit', function(){
         it('should provide a "GetById" method', function(){
             expect(CrmFetchKit.GetById).to.exist();
         });
-        
+
         it('should provide a "FetchByPage" method', function(){
             expect(CrmFetchKit.FetchByPage).to.exist();
         });
+
+        it('should provide a "Promise" property', function(){
+          expect(CrmFetchKit.Promise).to.exist();
+        });
+    });
+
+    describe('The "Promise" member is only the reference to the intneral used promise library', function(){
+      it('should provided a "all" method', function(){
+        expect(CrmFetchKit.Promise.all).to.be.a('function');
+      });
     });
 
     describe('By using "brwoserify" the global namespace should not be cluttered', function(){

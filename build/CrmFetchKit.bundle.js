@@ -7,6 +7,7 @@ var soapXml = require('./util/soapXmlMessages');
 var soapParser = require('./util/soapXmlParser');
 var xrmHttpUtil = require('./util/xrmHttpRequestUtil');
 var clientUtil = require('./util/xrmClientUtil');
+var BlueBirdPromise = require('bluebird');
 
 (function (window, document, undefined) {
     'use strict';
@@ -71,14 +72,14 @@ var clientUtil = require('./util/xrmClientUtil');
 
     // allows the loading of record only for certain pages (e.g. only page 1 and 2)
     function fetchByPage(fetchxml, pageNumber, opt_pagingCookie) {
-        
+
         if(pageNumber !== 1){
-            
+
             // add page-number & paging-cookie
             fetchxml = soapParser.setPagingDetails(
                                  fetchxml, pageNumber, opt_pagingCookie);
         }
-                
+
         return fetchMore(fetchxml);
     }
 
@@ -170,11 +171,12 @@ var clientUtil = require('./util/xrmClientUtil');
         FetchAll: fetchAll,
         FetchByPage: fetchByPage,
         Assign: assign,
-        AssignSync: assignSync
+        AssignSync: assignSync,
+        Promise: BlueBirdPromise,
     };
 }(window, document));
 
-},{"./util/soapXmlMessages":6,"./util/soapXmlParser":7,"./util/xrmClientUtil":8,"./util/xrmHttpRequestUtil":9}],2:[function(require,module,exports){
+},{"./util/soapXmlMessages":6,"./util/soapXmlParser":7,"./util/xrmClientUtil":8,"./util/xrmHttpRequestUtil":9,"bluebird":2}],2:[function(require,module,exports){
 (function (process,global){
 /* @preserve
  * The MIT License (MIT)

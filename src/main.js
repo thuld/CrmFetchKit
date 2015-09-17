@@ -2,6 +2,7 @@ var soapXml = require('./util/soapXmlMessages');
 var soapParser = require('./util/soapXmlParser');
 var xrmHttpUtil = require('./util/xrmHttpRequestUtil');
 var clientUtil = require('./util/xrmClientUtil');
+var BlueBirdPromise = require('bluebird');
 
 (function (window, document, undefined) {
     'use strict';
@@ -66,14 +67,14 @@ var clientUtil = require('./util/xrmClientUtil');
 
     // allows the loading of record only for certain pages (e.g. only page 1 and 2)
     function fetchByPage(fetchxml, pageNumber, opt_pagingCookie) {
-        
+
         if(pageNumber !== 1){
-            
+
             // add page-number & paging-cookie
             fetchxml = soapParser.setPagingDetails(
                                  fetchxml, pageNumber, opt_pagingCookie);
         }
-                
+
         return fetchMore(fetchxml);
     }
 
@@ -165,6 +166,7 @@ var clientUtil = require('./util/xrmClientUtil');
         FetchAll: fetchAll,
         FetchByPage: fetchByPage,
         Assign: assign,
-        AssignSync: assignSync
+        AssignSync: assignSync,
+        Promise: BlueBirdPromise,
     };
 }(window, document));
