@@ -43,7 +43,7 @@ describe('Specification - CrmFetchKit', function(){
             expect(CrmFetchKit.GetById).to.exist();
         });
         
-         it('should provide a "FetchByPage" method', function(){
+        it('should provide a "FetchByPage" method', function(){
             expect(CrmFetchKit.FetchByPage).to.exist();
         });
     });
