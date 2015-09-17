@@ -11,14 +11,17 @@ var header = require('gulp-header');
 var source = require('vinyl-source-stream');
 var browserify = require('browserify');
 var transform = require('vinyl-transform');
+var endOfLine = require('os').EOL;
+
 // package details
 var pkg = require('./package.json');
 
 var banner = [
     '// <%= name %>.js <%= version %>',
     '// <%= homepage %>',
-    '// <%= author %> \n',
-    ].join('\n');
+    '// <%= author %>', 
+    endOfLine
+    ].join(endOfLine);
 
 // static code analysis
 gulp.task('lint', function(){
@@ -81,14 +84,20 @@ gulp.task('browserify', function(){
     return browserify('./src/main.js')
         .bundle()
         .pipe(source('CrmFetchKit.bundle.js'))
-        .pipe(header(banner, pkg))
+        // .pipe(header(banner, pkg))
         .pipe(gulp.dest('./build/'));
 });
 
 /// before starting the build, the compress task must be completed
 gulp.task('build', ['compress', 'browserify-specs'], function(){
 
+
     gulp.start('build-specrunner');
+
+    return gulp.src('./build/*.js')
+        .pipe(header(banner, pkg))
+        .pipe(gulp.dest('./build'));
+
 });
 
 /// executes the unit-tests using karma (run test once and exit)
