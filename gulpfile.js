@@ -19,7 +19,7 @@ var pkg = require('./package.json');
 var banner = [
     '// <%= name %>.js <%= version %>',
     '// <%= homepage %>',
-    '// <%= author %>', 
+    '// <%= author %>',
     endOfLine
     ].join(endOfLine);
 
@@ -44,7 +44,6 @@ gulp.task('compress', ['browserify'], function() {
     return gulp.src('build/CrmFetchKit.bundle.js')
         .pipe(uglify())
         .pipe(rename({suffix: '.min'}))
-        .pipe(header(banner, pkg))
         .pipe(gulp.dest('./build') );
 });
 
@@ -90,7 +89,6 @@ gulp.task('browserify', function(){
 
 /// before starting the build, the compress task must be completed
 gulp.task('build', ['compress', 'browserify-specs'], function(){
-
 
     gulp.start('build-specrunner');
 

@@ -27,6 +27,24 @@ module.exports = (function(){
         return context;
     }
 
+    // in case the client is offline is the server-url different
+    function isOfflineClient(context) {
+      var isOffline = false;
+
+      if(context.client.getClientState !== undefined &&
+        context.client.getClientState() === "Offline") {
+
+          isOffline = true;
+      }
+      else if(context.isOutlookClient !== undefined &&
+        context.isOutlookOnline !== undefined){
+
+        isOffline = (context.isOutlookClient() && !context.isOutlookOnline());
+      }
+
+      return isOffline;
+    }
+
     // server URL based on the context information
     function getServerUrl() {
 
@@ -39,7 +57,8 @@ module.exports = (function(){
             // since version SDK 5.0.13
             url = context.getClientUrl();
         }
-        else if ( context.isOutlookClient() && !context.isOutlookOnline() ) {
+        else if (isOfflineClient()) {
+
             url = localServerUrl;
         }
         else {
