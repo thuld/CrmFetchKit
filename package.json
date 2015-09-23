@@ -4,7 +4,7 @@
   "description": "Library for Dynamics CRM that allows the execution of fetchxml-queries via JavaScript",
   "main": "./src/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
@@ -42,8 +42,8 @@
     "vinyl-transform": "^1.0.0"
   },
   "dependencies": {
-    "bluebird": "^2.6.4",
-    "npm": "^2.1.18",
+    "bluebird": "^2.10.1",
+    "npm": "^2.14.5",
     "xml-escape": "^1.0.0"
   },
   "readmeFilename": "README.md"
