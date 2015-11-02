@@ -265,12 +265,22 @@ module.exports = (function() {
 		return getEntityCollection(entityCollectionNode);
 	}
 
+	function getRetrieveResult(responseXmlObject) {
+
+		var executeResult = responseXmlObject.firstChild.firstChild.firstChild.firstChild,
+				resultsNode = getChildNode(executeResult, 'a:Results'),
+				singleEntityNode = getChildNode(resultsNode.firstChild, 'b:value');
+
+ 		return parseSingleEntityNode(singleEntityNode);
+	}
+
 	///
 	/// Public API
 	///
 	return {
 		setPagingDetails: setPagingDetails,
 		getSoapError: getSoapError,
-		getFetchResult: getFetchResult
+		getFetchResult: getFetchResult,
+		getRetrieveResult: getRetrieveResult
 	};
 }());

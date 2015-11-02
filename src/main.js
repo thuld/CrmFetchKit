@@ -127,30 +127,20 @@ var BlueBirdPromise = require('bluebird');
 
     function getByIdSync(entityname, id, columns) {
 
-        var fetchxml = soapXml.buildGetByIdFetchXml(id, entityname, columns),
-            entities = fetchSync(fetchxml);
+        var requestXml = soapXml.getRetrieveRequest(id, entityname, columns),
+            response = executeRequest(requestXml, false);
 
-        if(entities.length > 1){
-            throw new Error('Expected 1 record, found "' +entities.length+ '"');
-        }
-
-        // should return "null" instead of "undefined"
-        return entities[0] || null;
+        return soapParser.getRetrieveResult(response);
     }
 
     function getById(entityname, id, columns) {
 
-        var fetchxml = soapXml.buildGetByIdFetchXml(id, entityname, columns);
+        var requestXml = soapXml.getRetrieveRequest(id, entityname, columns);
 
-        return fetch(fetchxml).then(function(entities){
-
-            if(entities.length > 1){
-                throw new Error('Expected 1 record, found "' +entities.length+ '"');
-            }
-
-            // should return "null" instead of "undefined"
-            return entities[0] || null;
-        });
+        return executeRequest(requestXml, true)
+            .then(function (response) {
+                return soapParser.getRetrieveResult(response);
+            });
     }
 
     ///

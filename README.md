@@ -27,6 +27,10 @@ The code and the idea for this framework bases on the [CrmServiceToolkit](http:/
 # Support
 ## Version 3.x
 The version 3.x supports Chrome, Firefox and IE9+ and was tested with Dynamics CRM 2013 Online and **Dynamics CRM 2015 Online**.
+## Version 3.3.2
+Since version 3.3.2 uses the method `GetById` and `GetByIdSync` the SOAP **Retrieve** method. This was needed because the old approach to derive the primary attr. base on the entity name is not working for activities (appointment -> `activityid` and not `appointmentid`).
+
+Furthermore will the `GetById` and `GetByIdSync` now generate an error in case no record is found with this id. I the previous version the value `null` was returned. See integration-test `should yield am error in case a record does not exist`.
 
 ## Version 2.x
 The version 2.x supports Chrome, Firefox and IE8+ and was tested with **Dynamics CRM 2013 Online**.

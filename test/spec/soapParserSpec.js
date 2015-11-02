@@ -381,4 +381,96 @@ describe("Specification - soapXmlParser", function(){
         });
     });
 
+    describe('method - "getRetrieveResult"', function(){
+
+      var parser = new DOMParser(),
+          fakeAccountName = 'foobar-unit-testing',
+          responseXml;
+
+      beforeEach(function(){
+        var xml = [ "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">",
+                  "    <s:Body>",
+                  "        <ExecuteResponse xmlns=\"http://schemas.microsoft.com/xrm/2011/Contracts/Services\">",
+                  "            <ExecuteResult xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" i:type=\"a:RetrieveResponse\">",
+                  "                <a:ResponseName xmlns:a=\"http://schemas.microsoft.com/xrm/2011/Contracts\">Retrieve</a:ResponseName>",
+                  "                <a:Results xmlns:a=\"http://schemas.microsoft.com/xrm/2011/Contracts\">",
+                  "                    <a:KeyValuePairOfstringanyType>",
+                  "                        <b:key xmlns:b=\"http://schemas.datacontract.org/2004/07/System.Collections.Generic\">Entity</b:key>",
+                  "                        <b:value xmlns:b=\"http://schemas.datacontract.org/2004/07/System.Collections.Generic\" i:type=\"a:Entity\">",
+                  "                            <a:Attributes>",
+                  "                                <a:KeyValuePairOfstringanyType>",
+                  "                                    <b:key>accountid</b:key>",
+                  "                                    <b:value i:type=\"c:guid\">fe9ce180-3881-e511-8100-3863bb35fde0</b:value>",
+                  "                                </a:KeyValuePairOfstringanyType>",
+                  "                                <a:KeyValuePairOfstringanyType>",
+                  "                                    <b:key>donotemail</b:key>",
+                  "                                    <b:value i:type=\"c:boolean\">false</b:value>",
+                  "                                </a:KeyValuePairOfstringanyType>",
+                  "                                <a:KeyValuePairOfstringanyType>",
+                  "                                    <b:key>donotfax</b:key>",
+                  "                                    <b:value i:type=\"c:boolean\">true</b:value>",
+                  "                                </a:KeyValuePairOfstringanyType>",
+                  "                                <a:KeyValuePairOfstringanyType>",
+                  "                                    <b:key>name</b:key>",
+                  "                                    <b:value i:type=\"c:string\">"+fakeAccountName+"</b:value>",
+                  "                                </a:KeyValuePairOfstringanyType>",
+                  "                                <a:KeyValuePairOfstringanyType>",
+                  "                                    <b:key>createdon</b:key>",
+                  "                                    <b:value i:type=\"c:dateTime\">2015-11-02T08:05:43Z</b:value>",
+                  "                                </a:KeyValuePairOfstringanyType>",
+                  "                            </a:Attributes><a:EntityState i:nil=\"true\" />",
+                  "                            <a:FormattedValues>",
+                  "                                <a:KeyValuePairOfstringstring>",
+                  "                                    <b:key>donotemail</b:key>",
+                  "                                    <b:value>Allow</b:value>",
+                  "                                </a:KeyValuePairOfstringstring>",
+                  "                                <a:KeyValuePairOfstringstring>",
+                  "                                    <b:key>donotfax</b:key>",
+                  "                                    <b:value>Do Not Allow</b:value>",
+                  "                                </a:KeyValuePairOfstringstring>",
+                  "                                <a:KeyValuePairOfstringstring>",
+                  "                                    <b:key>createdon</b:key>",
+                  "                                    <b:value>02.11.2015 09:05</b:value>",
+                  "                                </a:KeyValuePairOfstringstring>",
+                  "                            </a:FormattedValues>",
+                  "                            <a:Id>fe9ce180-3881-e511-8100-3863bb35fde0</a:Id><a:KeyAttributes />",
+                  "                            <a:LogicalName>account</a:LogicalName><a:RelatedEntities /><a:RowVersion i:nil=\"true\" /></b:value>",
+                  "                    </a:KeyValuePairOfstringanyType>",
+                  "                </a:Results>",
+                  "            </ExecuteResult>",
+                  "        </ExecuteResponse>",
+                  "    </s:Body>",
+                  "</s:Envelope>"];
+
+          // arrange - remove whitespaces
+          responseXml = xml.map(trimLine).join("");
+      });
+
+      it('should parse the retrieve response and generate a "BusinessEntity" record', function(){
+
+        // arrange - convert string to XML Object
+        var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+        // action
+        var result = soapParser.getRetrieveResult(responseXmlObj);
+
+        // assert
+        expect(result).to.be.an.instanceof(BusinessEntity);
+
+      });
+
+      it('should parse the "name" attribute', function(){
+
+        // arrange - convert string to XML Object
+        var responseXmlObj = parser.parseFromString(responseXml, 'text/xml');
+
+        // action
+        var result = soapParser.getRetrieveResult(responseXmlObj);
+
+        // assert
+        expect(result.getValue('name')).to.equal(fakeAccountName);
+
+      });
+
+    });
 });

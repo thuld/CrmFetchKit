@@ -36,7 +36,7 @@ describe('CrmFetchKit API', function() {
             // assert
             expect(CrmFetchKit).to.have.property('FetchAll');
         });
-        
+
         it('should provided the public member "FetchByPage"', function() {
             // assert
             expect(CrmFetchKit).to.have.property('FetchByPage');
@@ -137,15 +137,18 @@ describe('CrmFetchKit API', function() {
             expect(account).to.exist();
         });
 
-        it('should yield "null" in case a record does not exist', function(){
+        it('should yield am error in case a record does not exist', function(){
 
             var fakeId = 'b887b4fd-f777-455f-a306-c763e904447e';
 
             // action
-            var account = CrmFetchKit.GetByIdSync('account', fakeId, columns);
-
-            // assert
-            expect(account).to.be.null();
+            try {
+                CrmFetchKit.GetByIdSync('account', fakeId, columns);
+            }
+            catch(err) {
+              // assert
+              expect(err.message).to.equal('account With Id = '+ fakeId +' Does Not Exist');
+            }
         });
     });
 
@@ -929,9 +932,9 @@ describe('CrmFetchKit API', function() {
                 .catch(done);
         });
     });
-    
+
     describe('FetchByPage', function() {
-        
+
         var numnberOfContacts = 7,
             lastName = 'foobar - fetchbypage',
             queryCountLimit = 2,
@@ -947,7 +950,7 @@ describe('CrmFetchKit API', function() {
                 '  </entity>',
                 '</fetch>'
             ].join('');
-        
+
          // setup
         before(function(done) {
 
@@ -961,7 +964,7 @@ describe('CrmFetchKit API', function() {
                     done();
                 });
         });
-        
+
         // teardown
         after(function(done) {
             // increase the execution-time-limit for mocha.js
@@ -973,20 +976,20 @@ describe('CrmFetchKit API', function() {
                     done();
                 });
         });
-        
+
         it('should only load the records from the two pages', function(done) {
             this.timeout(8000);
 
             // action - execute the query
             CrmFetchKit.FetchByPage(fetchxml, 1).then(function(responsePage1) {
-                    
-                    
+
+
                     return CrmFetchKit.FetchByPage(fetchxml, 2, responsePage1.pagingCookie)
                         .then(function(responsePage2){
-                            
+
                             var entitiesPage1Cnt = responsePage1.entities.length,
                                 entitiesPage2Cnt = responsePage2.entities.length;
-                            
+
                             // assert
                             expect( (entitiesPage2Cnt + entitiesPage1Cnt) ).to.equals(queryCountLimit * 2);
                         });

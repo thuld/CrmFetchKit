@@ -33,6 +33,55 @@ function buildGetByIdFetchXml(id, entityname, columns) {
     ].join('');
 }
 
+
+function buildExecuteRequest(soapRequestBodyXml) {
+
+  return ['<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">',
+          ' <soap:Body>',
+          '   <Execute xmlns="http://schemas.microsoft.com/xrm/2011/Contracts/Services" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">',
+                soapRequestBodyXml,
+          '     </Execute>',
+          '   </soap:Body>',
+          ' </soap:Envelope>'
+        ].join('');
+}
+
+// retrievs single recorcd based on the record id and the entity type name
+function getRetrieveRequest(id, entityname, columns) {
+
+  var requestColumns = columns.map(
+      function(col){ return '<c:string>' + col + '</c:string>';
+    }).join('');
+
+  var requestBodyXml = [
+      '<request i:type="a:RetrieveRequest" xmlns:a="http://schemas.microsoft.com/xrm/2011/Contracts">',
+      '	<a:Parameters xmlns:b="http://schemas.datacontract.org/2004/07/System.Collections.Generic">',
+      '	  <a:KeyValuePairOfstringanyType>',
+      '	    <b:key>Target</b:key>',
+      '	    <b:value i:type="a:EntityReference">',
+      '	      <a:Id>', id, '</a:Id>',
+      '	      <a:LogicalName>', entityname, '</a:LogicalName>',
+      '	      <a:Name i:nil="true" />',
+      '	    </b:value>',
+      '	  </a:KeyValuePairOfstringanyType>',
+      '	  <a:KeyValuePairOfstringanyType>',
+      '	    <b:key>ColumnSet</b:key>',
+      '	    <b:value i:type="a:ColumnSet">',
+      '	      <a:AllColumns>false</a:AllColumns>',
+      '       <a:Columns xmlns:c="http://schemas.microsoft.com/2003/10/Serialization/Arrays">',
+                requestColumns,
+      '       </a:Columns>',
+      '	    </b:value>',
+      '	  </a:KeyValuePairOfstringanyType>',
+      '	</a:Parameters>',
+      '	<a:RequestId i:nil="true" />',
+      '	<a:RequestName>Retrieve</a:RequestName>',
+      '</request>'
+    ].join('');
+
+    return buildExecuteRequest(requestBodyXml);
+}
+
 // generates the soap-xml message for the fetch-rquest
 function getFetchMoreXml(fetchxml) {
 
@@ -103,6 +152,7 @@ function getAssignXml(id, entityname, assigneeId, assigneeEntityName) {
 module.exports = {
     getFetchMoreXml: getFetchMoreXml,
     buildFetchAttributeXml: buildFetchAttributeXml,
+    getRetrieveRequest: getRetrieveRequest,
     getAssignXml: getAssignXml,
     buildGetByIdFetchXml: buildGetByIdFetchXml,
 };
