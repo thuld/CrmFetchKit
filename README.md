@@ -1,3 +1,6 @@
+#Important
+Do not use the minified version in combination with the App for CRM. The App for CRM seems to have problems with minified code. The minified version cause the entire App to stop working (step 4/5 of the configuration wizard failed).
+
 # Introduction
 Browser library that allows the execution of fetchxml-queries via JavaScript for Dynamics CRM using SOAP endpoint.
 
