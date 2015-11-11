@@ -1,10 +1,12 @@
-#Important
-Do not use the minified version in combination with the App for CRM. The App for CRM seems to have problems with minified code. The minified version cause the entire App to stop working (step 4/5 of the configuration wizard failed).
+# Important - Minified version and mobile App for CRM 2015
+**Do not use** the minified version (`CrmFetchKit.bundle.min.js`) in combination with the *App for CRM*. The App for CRM seems to have problems with minified code. The minified version prevents the successful configuration of the app (step 4/5 of the configuration wizard failed).
+
+This issue affects all versions (3.x.x). The reason for this issue is unknown, Microsoft Support did not provide any details.
 
 # Introduction
 Browser library that allows the execution of fetchxml-queries via JavaScript for Dynamics CRM using SOAP endpoint.
 
-Like the [CrmRestKit.js](http://crmrestkit.codeplex.com/) depdends this framework on the [promise](http://blogs.telerik.com/kendoui/posts/13-03-28/what-is-the-point-of-promises) concept, but it uses [bluebird](https://github.com/petkaantonov/bluebird) instead of jQuery to manage the complexity of asynchronous operation.
+Like the [CrmRestKit.js](http://crmrestkit.codeplex.com/) depends this framework on the [promise](http://blogs.telerik.com/kendoui/posts/13-03-28/what-is-the-point-of-promises) concept, but it uses [bluebird](https://github.com/petkaantonov/bluebird) instead of jQuery to manage the complexity of asynchronous operation.
 
 The code and the idea for this framework bases on the [CrmServiceToolkit](http://crmtoolkit.codeplex.com) developed by Daniel Cai.
 
@@ -31,9 +33,9 @@ The code and the idea for this framework bases on the [CrmServiceToolkit](http:/
 ## Version 3.x
 The version 3.x supports Chrome, Firefox and IE9+ and was tested with Dynamics CRM 2013 Online and **Dynamics CRM 2015 Online**.
 ## Version 3.3.2
-Since version 3.3.2 uses the method `GetById` and `GetByIdSync` the SOAP **Retrieve** method. This was needed because the old approach to derive the primary attr. base on the entity name is not working for activities (appointment -> `activityid` and not `appointmentid`).
+Since version 3.3.2 uses the method `GetById` and `GetByIdSync` the SOAP **Retrieve** message. This was needed because the old approach to derive the primary attr. base on the entity name is not working for activities (appointment -> `activityid` and not `appointmentid`).
 
-Furthermore will the `GetById` and `GetByIdSync` now generate an error in case no record is found with this id. I the previous version the value `null` was returned. See integration-test `should yield am error in case a record does not exist`.
+Furthermore will the `GetById` and `GetByIdSync` now throw an error in case no record is found with this id. I the previous version the value `null` was returned. See integration-test `should yield am error in case a record does not exist`.
 
 ## Version 2.x
 The version 2.x supports Chrome, Firefox and IE8+ and was tested with **Dynamics CRM 2013 Online**.
