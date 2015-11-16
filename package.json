@@ -1,6 +1,6 @@
 {
   "name": "crmfetchkit",
-  "version": "3.3.2",
+  "version": "3.4.0",
   "description": "Library for Dynamics CRM that allows the execution of fetchxml-queries via JavaScript",
   "main": "./src/main.js",
   "scripts": {
@@ -20,16 +20,17 @@
   "author": "Daniel Thul <thuld@outlook.com>",
   "license": "MIT",
   "devDependencies": {
-    "browserify": "^8.1.0",
+    "browserify": "^12.0.1",
     "chai": "^1.10.0",
     "gulp": "^3.9.0",
-    "gulp-file-include": "^0.7.1",
+    "gulp-file-include": "^0.13.7",
     "gulp-header": "^1.7.1",
-    "gulp-jshint": "^1.11.2",
+    "gulp-jshint": "^1.12.0",
     "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.5.4",
-    "gulp-uglify": "^1.4.1",
-    "jshint-stylish": "^1.0.0",
+    "gulp-uglify": "^1.5.1",
+    "jquery": "^2.1.4",
+    "jshint-stylish": "^2.1.0",
     "karma": "^0.12.31",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^0.1.12",
@@ -37,13 +38,13 @@
     "karma-ie-launcher": "^0.1.5",
     "karma-mocha": "^0.1.10",
     "karma-mocha-reporter": "^0.3.1",
-    "mocha": "^2.3.2",
-    "vinyl-source-stream": "^1.0.0",
-    "vinyl-transform": "^1.0.0"
+    "mocha": "^2.3.4",
+    "through2": "^2.0.0",
+    "underscore": "^1.8.3"
   },
   "dependencies": {
-    "bluebird": "^2.10.1",
-    "npm": "^2.14.5",
+    "bluebird": "^3.0.5",
+    "npm": "^3.4.0",
     "xml-escape": "^1.0.0"
   },
   "readmeFilename": "README.md"

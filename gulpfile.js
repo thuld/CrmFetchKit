@@ -8,9 +8,10 @@ var stylish = require('jshint-stylish');
 var fileinclude = require('gulp-file-include');
 var karma = require('karma').server;
 var header = require('gulp-header');
-var source = require('vinyl-source-stream');
+
 var browserify = require('browserify');
-var transform = require('vinyl-transform');
+var through2 = require('through2');
+
 var endOfLine = require('os').EOL;
 
 // package details
@@ -19,8 +20,7 @@ var pkg = require('./package.json');
 var banner = [
     '// <%= name %>.js <%= version %>',
     '// <%= homepage %>',
-    '// <%= author %>',
-    endOfLine
+    '// <%= author %>' + endOfLine
     ].join(endOfLine);
 
 // static code analysis
@@ -59,32 +59,40 @@ gulp.task('build-specrunner', function() {
         .pipe(gulp.dest('./test'));
 });
 
-// using vinyl-transform to browserify the specification modules
+
 gulp.task('browserify-specs', function() {
 
     var files = [
         './test/spec/*Spec.js',
         '!./test/spec/integrationSpec.js' ];
 
-    var browserified = transform(function(filename) {
-        var b = browserify(filename);
-        return b.bundle();
-    });
-
     return gulp.src(files)
-        .pipe(browserified)
-        .pipe(rename({suffix: '.bundle'}))
-        .pipe(gulp.dest('./test/spec/'));
+      .pipe(through2.obj(function (file, enc, next){
+              browserify(file.path)
+                  .bundle(function(err, res){
+                      // assumes file.contents is a Buffer
+                      file.contents = res;
+                      next(null, file);
+                  });
+          }))
+      .pipe(rename({suffix: '.bundle'}))
+      .pipe(gulp.dest('./test/spec/'));
 });
 
-// using vinyl-source-strea to browserify the module
+
 gulp.task('browserify', function(){
 
-    return browserify('./src/main.js')
-        .bundle()
-        .pipe(source('CrmFetchKit.bundle.js'))
-        // .pipe(header(banner, pkg))
-        .pipe(gulp.dest('./build/'));
+  return gulp.src('./src/main.js')
+    .pipe(through2.obj(function (file, enc, next){
+            browserify(file.path)
+                .bundle(function(err, res){
+                    // assumes file.contents is a Buffer
+                    file.contents = res;
+                    next(null, file);
+                });
+        }))
+    .pipe(rename('CrmFetchKit.bundle.js'))
+    .pipe(gulp.dest('./build/'))
 });
 
 /// before starting the build, the compress task must be completed
