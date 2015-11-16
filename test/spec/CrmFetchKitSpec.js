@@ -12,43 +12,43 @@ describe('Specification - CrmFetchKit', function(){
     describe('API', function(){
 
         it('should provide a "Fetch" method', function(){
-            expect(CrmFetchKit.Fetch).to.exist();
+            expect(CrmFetchKit.Fetch).to.exist;
         });
 
         it('should provide a "FetchSync" method', function(){
-            expect(CrmFetchKit.FetchSync).to.exist();
+            expect(CrmFetchKit.FetchSync).to.exist;
         });
 
         it('should provide a "FetchMore" method', function(){
-            expect(CrmFetchKit.FetchMore).to.to.exist();
+            expect(CrmFetchKit.FetchMore).to.to.exist;
         });
 
         it('should provide a "FetchMoreSync" method', function(){
-            expect(CrmFetchKit.FetchMoreSync).to.to.exist();
+            expect(CrmFetchKit.FetchMoreSync).to.to.exist;
         });
 
         it('should provide a "FetchAll" method', function(){
-            expect(CrmFetchKit.FetchAll).to.exist();
+            expect(CrmFetchKit.FetchAll).to.exist;
         });
 
         it('should provide a "Assign" method', function(){
-            expect(CrmFetchKit.Assign).to.exist();
+            expect(CrmFetchKit.Assign).to.exist;
         });
 
         it('should provide a "AssignSync" method', function(){
-            expect(CrmFetchKit.AssignSync).to.exist();
+            expect(CrmFetchKit.AssignSync).to.exist;
         });
 
         it('should provide a "GetById" method', function(){
-            expect(CrmFetchKit.GetById).to.exist();
+            expect(CrmFetchKit.GetById).to.exist;
         });
 
         it('should provide a "FetchByPage" method', function(){
-            expect(CrmFetchKit.FetchByPage).to.exist();
+            expect(CrmFetchKit.FetchByPage).to.exist;
         });
 
         it('should provide a "Promise" property', function(){
-          expect(CrmFetchKit.Promise).to.exist();
+          expect(CrmFetchKit.Promise).to.exist;
         });
     });
 

@@ -250,7 +250,7 @@ describe("Specification - soapXmlParser", function(){
             var result = soapParser.getFetchResult(responseXmlObj);
 
             // assert - "createBy" is a lookup to the "SystemUser" entity
-            expect(result.entities[0].getValue('createdby', 'name')).to.exist();
+            expect(result.entities[0].getValue('createdby', 'name')).to.exist;
         });
 
         it('should pasre the for an empty optionset-value "NULL" not "NaN"', function() {
@@ -363,7 +363,7 @@ describe("Specification - soapXmlParser", function(){
                 var result = soapParser.getFetchResult(responseXmlObj);
 
                 // assert
-                expect(result.totalRecordCount).to.exist();
+                expect(result.totalRecordCount).to.exist;
 
             });
 

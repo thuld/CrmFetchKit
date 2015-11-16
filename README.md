@@ -298,6 +298,9 @@ The GitHub folder `build` hosts two file: `CrmFetchKit.bundle.js`, `CrmFetchKit.
 **Note:** The library uses [bluebird](https://github.com/petkaantonov/bluebird) for the promise features. The build step (gulp) generates the file `CrmFetchKit.bundle.js` and this file already contains bluebird. So it is not necessary to deploy bluebird as additional web-resource to Dynamics CRM.
 
 ## Bower.io
+### Update 3.4.0
+Since version 3.4.0 is bower not longer needed. All dependencies are replaced with npm.
+### Before Version 3.4.0
 This module could be installed via [bower](http://bower.io/):
 ````
 bower install crmfetchkit
