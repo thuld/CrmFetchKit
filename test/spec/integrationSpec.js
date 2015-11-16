@@ -1,4 +1,5 @@
 /*globals describe, it, chai, before, after, Xrm, _, specUtil, Promise*/
+/*jshint expr: true*/
 
 'use strict';
 describe('CrmFetchKit API', function() {
@@ -121,7 +122,7 @@ describe('CrmFetchKit API', function() {
             CrmFetchKit.GetById('account', accountId, columns)
                 .then(function(account) {
                     // assert
-                    expect(account).to.exist();
+                    expect(account).to.exist;
 
                 })
                 .then(done)
@@ -134,7 +135,7 @@ describe('CrmFetchKit API', function() {
             var account = CrmFetchKit.GetByIdSync('account', accountId, columns);
 
             // assert
-            expect(account).to.exist();
+            expect(account).to.exist;
         });
 
         it('should yield am error in case a record does not exist', function(){
@@ -223,7 +224,7 @@ describe('CrmFetchKit API', function() {
                 var entities = CrmFetchKit.FetchSync(fetchxml);
                 var id = entities[0].getValue('accountid');
 
-                expect(id).to.exist();
+                expect(id).to.exist;
                 expect(id).to.equal(accountId);
             });
 
@@ -312,7 +313,7 @@ describe('CrmFetchKit API', function() {
                 var entities = CrmFetchKit.FetchSync(fetchxml);
 
                 // assert - "createBy" is a lookup to the "SystemUser" entity
-                expect(entities[0].getValue('createdby', 'name')).to.exist();
+                expect(entities[0].getValue('createdby', 'name')).to.exist;
             });
 
             it('should yield the boolen attributes as boolean', function() {
@@ -382,7 +383,7 @@ describe('CrmFetchKit API', function() {
                 CrmFetchKit.Fetch(fetchxml).then(function(entities) {
                         var id = entities[0].getValue('accountid');
 
-                        expect(id).to.exist();
+                        expect(id).to.exist;
                         expect(id).to.equal(accountId);
                     })
                     .then(done)
@@ -513,7 +514,7 @@ describe('CrmFetchKit API', function() {
                         var account = entities[0];
 
                         // assert - "createBy" is a lookup to the "SystemUser" entity
-                        expect(account.getValue('createdby', 'name')).to.exist();
+                        expect(account.getValue('createdby', 'name')).to.exist;
                     })
                     .catch(specUtil.onFetchError)
                     .finally(done);
@@ -628,7 +629,7 @@ describe('CrmFetchKit API', function() {
                     .then(function(results) {
 
                         // assert - the query uses "bu" as alias
-                        expect(results[0].getValue('bu.name')).to.exist();
+                        expect(results[0].getValue('bu.name')).to.exist;
                     })
                     .catch(specUtil.onFetchError)
                     .finally(done);
@@ -697,7 +698,7 @@ describe('CrmFetchKit API', function() {
                         // assert - the list of attendees is retrieved
                         expect(attendees.entities.length).to.equal(numberOfAttendees);
                         // assert - the EntityCollection attr. is parsed
-                        expect(attendees.entities[0].getValue('partyid')).to.exist();
+                        expect(attendees.entities[0].getValue('partyid')).to.exist;
                     })
                     .then(done)
                     .catch(done);
@@ -775,7 +776,7 @@ describe('CrmFetchKit API', function() {
             var response = CrmFetchKit.FetchMoreSync(fetchxml);
 
             // assert
-            expect(response).to.exist();
+            expect(response).to.exist;
         });
 
         it('should provide the "totalRecordcount" information', function(done) {
@@ -784,7 +785,7 @@ describe('CrmFetchKit API', function() {
             // the query should only yield the first 10 records
             CrmFetchKit.FetchMore(fetchxml).then(function(response) {
                     // assert
-                    expect(response.totalRecordCount).to.exist();
+                    expect(response.totalRecordCount).to.exist;
                 })
                 .then(done)
                 .catch(done);

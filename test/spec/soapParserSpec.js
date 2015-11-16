@@ -1,4 +1,5 @@
 /*globals describe, chai, it, beforeEach */
+/*jshint expr: true*/
 
 var soapParser = require('../../src/util/soapXmlParser');
 var BusinessEntity = require('../../src/util/BusinessEntity');

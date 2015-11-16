@@ -1,4 +1,5 @@
 /*globals describe, chai, it, BusinessEntity*/
+/*jshint expr: true*/
 
 // do not assign the require to a varialbe!
 // the main module poplates the window object but does not return a value
