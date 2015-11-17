@@ -1,7 +1,7 @@
 # Important - Minified version and mobile App for CRM 2015
 **Do not use** the minified version (`CrmFetchKit.bundle.min.js`) in combination with the *App for CRM*. The App for CRM seems to have problems with minified code. The minified version prevents the successful configuration of the app (step 4/5 of the configuration wizard failed).
 
-This issue affects all versions (3.x.x). The reason for this issue is unknown, Microsoft Support did not provide any details.
+This issue affects all versions (3.x.x). The reason for this issue is unknown, Microsoft support did not provide any details.
 
 # Introduction
 Browser library that allows the execution of fetchxml-queries via JavaScript for Dynamics CRM using SOAP endpoint.
@@ -31,11 +31,7 @@ The code and the idea for this framework bases on the [CrmServiceToolkit](http:/
 
 # Support
 ## Version 3.x
-The version 3.x supports Chrome, Firefox and IE9+ and was tested with Dynamics CRM 2013 Online and **Dynamics CRM 2015 Online**.
-## Version 3.3.2
-Since version 3.3.2 uses the method `GetById` and `GetByIdSync` the SOAP **Retrieve** message. This was needed because the old approach to derive the primary attr. base on the entity name is not working for activities (appointment -> `activityid` and not `appointmentid`).
-
-Furthermore will the `GetById` and `GetByIdSync` now throw an error in case no record is found with this id. I the previous version the value `null` was returned. See integration-test `should yield am error in case a record does not exist`.
+The version 3.x supports Chrome, Firefox, Edge and IE9+ and was tested with Dynamics CRM 2013 Online and **Dynamics CRM 2015 Online**.
 
 ## Version 2.x
 The version 2.x supports Chrome, Firefox and IE8+ and was tested with **Dynamics CRM 2013 Online**.
@@ -44,7 +40,7 @@ The version 2.x supports Chrome, Firefox and IE8+ and was tested with **Dynamics
 In case the provided samples in this section are not sufficient, please review the [integration tests](https://github.com/thuld/CrmFetchKit/blob/master/test/spec/integrationSpec.js).
 
 ## GetById
-Instead of create a fetchxml query for a very simple query, this method should be used to load an records based on the id.
+Instead of creating an fetchxml query for a very simple query, this method could be used to load an records based on the id.
 
 ````javascript
 var accountid = '06887701-2642-4a53-99ba-c24ce1a5688b',
@@ -280,27 +276,12 @@ console.log('Name of the business-unit: ' + first.getValue('bu.name'));
 console.log('Name of the account: '+ first.getValue('name'));
 });
 ````
-### Support for asynchronous and synchronous execution
-The methods `Fetch`, `FetchMore` and `Assign` support the options parameter `opt_async` (default is set to `true`). Due to the default value, will the library execute the operation in asynchronous mode when the very last parameter is omitted.
-
-````javascript
-CrmFetchKit.Fetch(query);
-````
-To executed the operation in synchronous mode, the last parameter must be set to `false` when invoking the function
-````javascript
-CrmFetchKit.Fetch(query, false);
-````
-The method `FetchAll` supports **only** the asynchronous execution.
-
 # Installation
 The GitHub folder `build` hosts two file: `CrmFetchKit.bundle.js`, `CrmFetchKit.min.js`, just download one of these files and deploy the script as web-resource to your CRM server.
 
 **Note:** The library uses [bluebird](https://github.com/petkaantonov/bluebird) for the promise features. The build step (gulp) generates the file `CrmFetchKit.bundle.js` and this file already contains bluebird. So it is not necessary to deploy bluebird as additional web-resource to Dynamics CRM.
 
 ## Bower.io
-### Update 3.4.0
-Since version 3.4.0 is bower not longer needed. All dependencies are replaced with npm.
-### Before Version 3.4.0
 This module could be installed via [bower](http://bower.io/):
 ````
 bower install crmfetchkit
@@ -315,7 +296,7 @@ npm install crmfetchkit
 ## Build
 To build the library from source-code the following components are required:
 - Node.js
-- bower.io
+- Depedencies (see `package.json`)
 
 Open the command line, navigate to the root folder and enter the following command:
 ````
@@ -323,10 +304,6 @@ npm install
 ````
 This will install all the needed node.js packages for the task-runner and the build process.
 
-Next we need to install the client dependencies. Enter the following command:
-````
-bower install
-````
 # Testing
 ## Unit Test
 A very simple unit-testing is implemented (based on [karma](http://karma-runner.github.io/0.12/index.html). The test only verifies some basis conditions.
@@ -336,8 +313,14 @@ Run the following command to execute the unit-tests:
 gulp test
 ````
 ## Integration-tests
-Part of build task is the file "SpecRunner.html" generated. This HTML file contains all dependencies (e.g. `mocha.js`, `chai.js`, `CrmFetchKit.bundle.js`...) so the you need only to deploy this single HTML file as web-resource your environment.
+Part of build task is the file `SpecRunner.html` generated. This HTML file contains all dependencies (e.g. `mocha.js`, `chai.js`, `CrmFetchKit.bundle.js`...) so the you need only to deploy this single HTML file as web-resource your environment.
 # Versions
+## Version 3.4.0
+Since version 3.4.0 is [bower](http://bower.io/) not longer needed for the dependencies. All dependencies are replaced with npm.
+## Version 3.3.2
+Since version 3.3.2 uses the method `GetById` and `GetByIdSync` the SOAP **Retrieve** message. This was needed because the old approach to derive the primary attribute base on the entity name is not working for activities (appointment -> `activityid` and not `appointmentid`).
+
+Furthermore will the `GetById` and `GetByIdSync` now throw an error in case no record is found with this id. I the previous version the value `null` was returned. See integration-test `should yield am error in case a record does not exist`.
 ## Version 3.x
 This version replaced [jQuery](http://jquery.com/) dependency with [bluebird](https://github.com/petkaantonov/bluebird). Due to the use of bluebird instead of jQuery, some method are no longer available by the returned promise:
 - `always` instead use `finally`
