@@ -44,13 +44,13 @@ var BlueBirdPromise = require('bluebird');
     }
 
     function setStateSync(id, entityname, state, status) {
-        var xml = getSetStateXml(id, entityname, state, status);
+        var xml = soapXml.getSetStateXml(id, entityname, state, status);
 
         return executeRequest(xml, false);
     }
 
     function setState(id, entityname, state, status) {
-        var xml = getSetStateXml(id, entityname, state, status);
+        var xml = soapXml.getSetStateXml(id, entityname, state, status);
 
         return executeRequest(xml, true);
     }
