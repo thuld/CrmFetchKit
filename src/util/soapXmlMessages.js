@@ -146,6 +146,47 @@ function getAssignXml(id, entityname, assigneeId, assigneeEntityName) {
     ].join('');
 }
 
+// generates the soap-xml message for the setstate-request
+function getSetStateXml(id, entityname, state, status) {
+
+    return [
+        '<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">',
+        '  <s:Body>',
+        '    <Execute xmlns=\"http://schemas.microsoft.com/xrm/2011/Contracts/Services\" ',
+        '           xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">',
+        '      <request i:type=\"b:SetStateRequest\" xmlns:a=\"http://schemas.microsoft.com/xrm/2011/Contracts\" ',
+        '           xmlns:b=\"http://schemas.microsoft.com/crm/2011/Contracts\">',
+        '        <a:Parameters xmlns:c=\"http://schemas.datacontract.org/2004/07/System.Collections.Generic\">',
+        '          <a:KeyValuePairOfstringanyType>',
+        '            <c:key>EntityMoniker</c:key>',
+        '            <c:value i:type=\"a:EntityReference\">',
+        '              <a:Id>' + id + '</a:Id>',
+        '              <a:LogicalName>' + entityname + '</a:LogicalName>',
+        '              <a:Name i:nil=\"true\" />',
+        '            </c:value>',
+        '          </a:KeyValuePairOfstringanyType>',
+        '          <a:KeyValuePairOfstringanyType>',
+        '            <c:key>State</c:key>',
+        '            <c:value i:type=\"a:OptionSetValue\">',
+        '              <a:Value>' + state + '</a:Value>',
+        '            </c:value>',
+        '          </a:KeyValuePairOfstringanyType>',
+        '          <a:KeyValuePairOfstringanyType>',
+        '            <c:key>Status</c:key>',
+        '            <c:value i:type=\"a:OptionSetValue\">',
+        '              <a:Value>' + status + '</a:Value>',
+        '            </c:value>',
+        '          </a:KeyValuePairOfstringanyType>',
+        '        </a:Parameters>',
+        '        <a:RequestId i:nil=\"true\" />',
+        '        <a:RequestName>SetState</a:RequestName>',
+        '      </request>',
+        '    </Execute>',
+        '  </s:Body>',
+        '</s:Envelope>'
+    ].join('');
+}
+
 ///
 /// Public API of the module
 ///
@@ -155,4 +196,5 @@ module.exports = {
     getRetrieveRequest: getRetrieveRequest,
     getAssignXml: getAssignXml,
     buildGetByIdFetchXml: buildGetByIdFetchXml,
+    getSetStateXml: getSetStateXml
 };

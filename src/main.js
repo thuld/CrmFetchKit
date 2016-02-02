@@ -43,6 +43,18 @@ var BlueBirdPromise = require('bluebird');
         return executeRequest(xml, true);
     }
 
+    function setStateSync(id, entityname, state, status) {
+        var xml = soapXml.getSetStateXml(id, entityname, state, status);
+
+        return executeRequest(xml, false);
+    }
+
+    function setState(id, entityname, state, status) {
+        var xml = soapXml.getSetStateXml(id, entityname, state, status);
+
+        return executeRequest(xml, true);
+    }
+
     // executes synchronously an fetchxml-request and returns, beside
     // of the records some meta data (e.g. total-record-count)
     function fetchMoreSync(fetchxml) {
@@ -157,6 +169,8 @@ var BlueBirdPromise = require('bluebird');
         FetchByPage: fetchByPage,
         Assign: assign,
         AssignSync: assignSync,
+        SetState: setState,
+        SetStateSync: setStateSync,
         Promise: BlueBirdPromise,
     };
 }(window, document));
