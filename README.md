@@ -173,7 +173,7 @@ for(var i = 0, max = response.entities; i < max; i++){
 
 ````
 ## FetchAll
-To address the 5.000 records query limit of Dynamics CRM (a single request return at a maximum 5.000 records) provides the CrmFetchKit with the `FetchAll` method an option to load all records retunred by an query.
+To address the 5.000 record query limit of Dynamics CRM (a single request return at a maximum 5.000 records) the CrmFetchKit provides the `FetchAll` method as an option to load all records returned by a query.
 
 **Note:** This method supports only the asynchronous execution.
 ````javascript
@@ -193,7 +193,7 @@ CrmFetchKit.FetchAll(fetchxml).then(function(entities){
 	}
 });
 ````
-Internally uses `FetchAll` the `FetchMore` method and the provided `pagingCookie` to load the pages until all records are loaded.
+Internally `FetchAll` uses the `FetchMore` method and the provided `pagingCookie` to load the pages until all records are loaded.
 
 ## FetchByPage
 This method allows the load of records per page-number.
@@ -231,7 +231,7 @@ var contactid = '06569fb8-88d0-4588-bdb8-c20c19e29205',
 
 CrmFetchKit.AssignSync(contactid, 'contact', teamid, 'team');
 ````
-**Note:** The parameter for this method have change form the 1.x version of the CrmFetchKit. The old version supported only the assignment of `SystemUsers` where the current version supports `Teams` and `SystemUsers`.
+**Note:** The parameter for this method have change from the 1.x version of the CrmFetchKit. The old version supported only the assignment of `SystemUsers` where the current version supports `Teams` and `SystemUsers`.
 
 ## Promise Member
 Since version 3.3.0 support exposes the library the object `Promise`. This is only the reference
@@ -327,11 +327,11 @@ This version replaced [jQuery](http://jquery.com/) dependency with [bluebird](ht
 - `fail` instead use `catch`
 
 ### Breaking Changes
-The optional `async` for `Fetch`, `FetchMore` and `Assign` is no longer supported. All methods are now  async. That means that `CrmFetchKit.Fetch(xml, false)` will **not** perform a synchronous operation. To execute a sync operation use one of the `*Sync` methods (e.g. `FetchSync`, `FetchMoreSync`).
+The optional `async` for `Fetch`, `FetchMore` and `Assign` is no longer supported. All methods are now  async. That means that `CrmFetchKit.Fetch(xml, false)` will **not** perform a synchronous operation. To execute a sync operation, use one of the `*Sync` methods (e.g. `FetchSync`, `FetchMoreSync`).
 
 Furthermore supports the library now the methods `GetById` and `GetByIdSync`.
 
-**Note:** Unfortunately depends `CrmRestKit.js` (use for the integration-tests) still jQuery. Therefor is it not possible to remove the jQuery dependency for now.
+**Note:** Unfortunately `CrmRestKit.js` (use for the integration-tests) still depends on jQuery. Therefore is it not possible to remove the jQuery dependency for now.
 
 Internally uses CrmFetchKit now [browserify](http://browserify.org/) for the dependency management.
 
