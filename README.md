@@ -160,7 +160,7 @@ var fetchxml = [
 	'  </entity>',
 	'</fetch>'].join('');
 
-var CrmFetchKit.FetchMoreSync(fetchxml);
+var response = CrmFetchKit.FetchMoreSync(fetchxml);
 
 console.log(response.totalRecordCount);
 console.log(response.moreRecords);
